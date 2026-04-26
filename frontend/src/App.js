@@ -13,8 +13,8 @@ function App() {
               <h2>Tasks</h2>
 
               <div className="inputRow">
-                <input style={{outline: "1px solid #4f4d61"}} placeholder="Enter a task..." />
-                <button style={{outline: "1px solid #4f4d61"}}>Add</button>
+                <input className="entryBox" placeholder="Enter a task..." />
+                <button className="addButton">Add</button>
               </div>
 
               <div className="taskContainer">
@@ -22,8 +22,8 @@ function App() {
                   <span>Example Task</span>
 
                   <div className="taskButtons">
-                    <button style={{outline: "1px solid #4f4d61"}} className="taskBtn"></button>
-                    <button style={{outline: "1px solid #4f4d61"}} className="taskBtn"></button>
+                    <button class="inProgressButton" className="taskBtn"></button>
+                    <button class="doneButton" className="taskBtn"></button>
                   </div>
                 </div>
               </div>

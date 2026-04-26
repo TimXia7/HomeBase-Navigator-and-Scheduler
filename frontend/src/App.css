@@ -116,3 +116,19 @@ button:hover {
 .taskBtn:hover {
   background: #5a5ae6;
 }
+
+.entryBox{
+  outline: 1px solid #4f4d61;
+}
+
+.addButton {
+  outline: 1px solid #4f4d61;
+}
+
+.inProgressButton {
+  outline: 1px solid #4f4d61;
+}
+
+.doneButton {
+  outline: 1px solid #4f4d61;
+}
