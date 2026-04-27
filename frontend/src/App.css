@@ -102,6 +102,10 @@ button {
   background: #1f232b;
   cursor: pointer;
   transition: 0.2s;
+
+  display: flex;  
+  justify-content: center; 
+  align-items: center;     
 }
 
 .inProgressButton:hover {
