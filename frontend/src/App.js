@@ -22,8 +22,8 @@ function App() {
                   <span>Example Task</span>
 
                   <div className="taskButtons">
-                    <button class="inProgressButton" className="taskBtn"></button>
-                    <button class="doneButton" className="taskBtn"></button>
+                    <button className="inProgressButton">check</button>
+                    <button className="doneButton"></button>
                   </div>
                 </div>
               </div>

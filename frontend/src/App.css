@@ -15,13 +15,16 @@ section {
 }
 
 .mainContainer {
-  background: #817d99;
-  color: black;
-  outline: 1px solid black;
+  margin-top: 4%;
+  background: #1f232b;         
+  color: #e5e7eb;
+
   border-radius: 20px;
   width: 50%;
-  padding: 50px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+  padding: 40px;
+
+  border: 1px solid #2c313a;     
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
 }
 
 input {
@@ -38,25 +41,30 @@ input {
 
 button {
   padding: 14px 20px;
-  font-size: 16px;
-
-  border: none;
-  border-radius: 10px;
-
-  background-color: #7c7cff;
-  color: white;
-
-  cursor: pointer;
-  transition: 0.2s;
 }
 
-button:hover {
-  background-color: #5a5ae6;
-}
 
 .inputRow {
   display: flex;
   align-items: center;
+}
+
+.entryBox {
+  width: 100%;
+  padding: 14px;
+  font-size: 16px;
+
+  border-radius: 10px;
+  border: 1px solid #2c313a;
+
+  background: #2a2f38;
+  color: #e5e7eb;
+
+  margin-right: 10px;
+}
+
+.entryBox::placeholder {
+  color: #9ca3af;
 }
 
 .taskContainer {
@@ -70,11 +78,12 @@ button:hover {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  outline: 1px solid #4f4d61;
 
-  background: #6e6b85;
+  background: #2a2f38;
   padding: 15px;
   border-radius: 10px;
+
+  border: 1px solid #2c313a;
 }
 
 .taskButtons {
@@ -82,34 +91,41 @@ button:hover {
   gap: 10px;
 }
 
-.taskBtn {
+.inProgressButton,
+.doneButton {
   width: 35px;
   height: 35px;
 
-  border: none;
   border-radius: 8px;
+  border: 1px solid #23272e;
 
-  background: #8884a8;
+  background: #1f232b;
   cursor: pointer;
   transition: 0.2s;
 }
 
-.taskBtn:hover {
-  background: #5a5ae6;
+.inProgressButton:hover {
+  background: #3a3f48;
 }
 
-.entryBox{
-  outline: 1px solid #4f4d61;
+.doneButton:hover {
+  background: #3a3f48;
 }
 
 .addButton {
-  outline: 1px solid #4f4d61;
+  padding: 14px 20px;
+  font-size: 16px;
+
+  border-radius: 10px;
+  border: 1px solid #23272e;
+
+  background-color: #23272e;
+  color: #e5e7eb;
+
+  cursor: pointer;
+  transition: 0.2s;
 }
 
-.inProgressButton {
-  outline: 1px solid #4f4d61;
-}
-
-.doneButton {
-  outline: 1px solid #4f4d61;
+.addButton:hover {
+  background-color: #3a3f48;
 }
