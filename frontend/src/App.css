@@ -1,26 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
 
-h1 {
-  font-size: 32px;
-  margin-bottom: 10px;
-}
-
-h2 {
-  font-weight: 600;
-}
-
 .App {
   text-align: center;
-}
-
-html, body {
-  height: 100%;
-  background: linear-gradient(to bottom, #1e1e2f, #3a3a5a);
-}
-
-body {
-  font-family: 'Inter', sans-serif;
-  color: white;
 }
 
 section {
