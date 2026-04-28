@@ -1,10 +1,103 @@
-import { motion } from 'framer-motion'
+import { useState } from "react";
+import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import {
+  DndContext,
+  useDraggable,
+  useDroppable,
+} from "@dnd-kit/core";
 
 import "./BoardPage.css";
 
+function TaskCard({ task }) {
+  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+    id: task.id,
+  });
+
+  const style = transform
+    ? {
+        transform: `translate(${transform.x}px, ${transform.y}px)`,
+      }
+    : undefined;
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="taskCard"
+      {...listeners}
+      {...attributes}
+    >
+      <p>{task.title}</p>
+      <span>{task.location}</span>
+    </div>
+  );
+}
+
+function Column({ id, title, tasks }) {
+  const { setNodeRef } = useDroppable({
+    id,
+  });
+
+  return (
+    <section ref={setNodeRef} className="column">
+      <h2>{title}</h2>
+
+      {tasks.map((task) => (
+        <TaskCard key={task.id} task={task} />
+      ))}
+    </section>
+  );
+}
+
 function BoardPage() {
   const navigate = useNavigate();
+
+  const [columns, setColumns] = useState({
+    newTasks: [
+      {
+        id: "task-1",
+        title: "Example task",
+        location: "No location yet",
+      },
+    ],
+    inProgress: [],
+    finished: [],
+  });
+
+  function handleDragEnd(event) {
+    const { active, over } = event;
+
+    if (!over) return;
+
+    const taskId = active.id;
+    const destinationColumn = over.id;
+
+    let sourceColumn = null;
+    let movedTask = null;
+
+    for (const columnId in columns) {
+      const foundTask = columns[columnId].find((task) => task.id === taskId);
+
+      if (foundTask) {
+        sourceColumn = columnId;
+        movedTask = foundTask;
+        break;
+      }
+    }
+
+    if (!sourceColumn || !movedTask) return;
+    if (sourceColumn === destinationColumn) return;
+
+    setColumns((prevColumns) => ({
+      ...prevColumns,
+      [sourceColumn]: prevColumns[sourceColumn].filter(
+        (task) => task.id !== taskId
+      ),
+      [destinationColumn]: [...prevColumns[destinationColumn], movedTask],
+    }));
+  }
+
   return (
     <motion.div
       className="pageSlide"
@@ -24,31 +117,36 @@ function BoardPage() {
             </div>
           </header>
 
-          <main className="board">
-            <section className="column">
-              <h2>New Tasks</h2>
+          <DndContext onDragEnd={handleDragEnd}>
+            <main className="board">
+              <Column
+                id="newTasks"
+                title="New Tasks"
+                tasks={columns.newTasks}
+              />
 
-              <div className="taskCard">
-                <p>Example task</p>
-                <span>No location yet</span>
-              </div>
-            </section>
+              <Column
+                id="inProgress"
+                title="In Progress"
+                tasks={columns.inProgress}
+              />
 
-            <section className="column">
-              <h2>In Progress</h2>
-            </section>
-
-            <section className="column">
-              <h2>Finished</h2>
-            </section>
-          </main>
+              <Column
+                id="finished"
+                title="Finished"
+                tasks={columns.finished}
+              />
+            </main>
+          </DndContext>
         </div>
 
         <aside className="mapPanel">
-          <button className="mapButton" onClick={() => navigate("/map")}>To Map</button>
+          <button className="mapButton" onClick={() => navigate("/map")}>
+            To Map
+          </button>
         </aside>
       </div>
-      </motion.div>
+    </motion.div>
   );
 }
 
