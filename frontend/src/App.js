@@ -1,4 +1,4 @@
-import './App.css';
+import "./App.css";
 
 function App() {
   return (
@@ -29,12 +29,6 @@ function App() {
               </div>
             </section>
 
-            {/* <section>
-              <h2>Map</h2>
-              <div style={{ height: "300px", background: "#eee" }}>
-                Map placeholder
-              </div>
-            </section> */}
           </main>
         </div>
     </div>
