@@ -1,177 +1,27 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
 
-.App {
-  text-align: center;
-}
-
-section {
-  margin-top: 30px;
-}
-
-.main {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.mainContainer {
-  margin-top: 4%;
-  background: #ffffff;
-  color: #1f1f2e;
-  
-  border-radius: 10px;
-  width: 50%;
-  padding: 40px;
-
-  border: 1px solid #d8d2ee;
-  box-shadow: 0 10px 30px rgba(60, 50, 90, 0.15);
-}
-
-input {
-  width: 70%;
-  padding: 14px;
-  font-size: 16px;
-
-  border: none;
-  border-radius: 10px;
-  outline: none;
-
-  margin-right: 10px;
-}
-
-button {
-  padding: 14px 20px;
-}
-
-
-.inputRow {
-  display: flex;
-  align-items: center;
-}
-
-.entryBox {
-  width: 100%;
-  padding: 14px;
-  font-size: 16px;
-
-  border-radius: 10px;
-  border: 1px solid #cfc8e8;
-
-  background: #faf9ff;
-  color: #1f1f2e;
-
-  margin-right: 10px;
-}
-
-.entryBox::placeholder {
-  color: #8a849b;
-}
-
-.taskContainer {
-  margin-top: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.taskItem {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  background: #3E4552;
-  color: #e5e7eb;
-  padding: 15px;
-  border-radius: 10px;
-
-  border: 1px solid #d8d2ee;
-}
-
-.taskButtons {
-  display: flex;
-  gap: 10px;
-}
-
-.inProgressButton,
-.doneButton {
-  width: 35px;
-  height: 35px;
-
-  border-radius: 8px;
-  border: 1px solid #23272e;
-
-  background: #1f232b;
-  cursor: pointer;
-  transition: 0.2s;
-
-  background: none;
-  border: none;
-  outline: none;
-
+html, body {
+  margin: 0;
   padding: 0;
-
-  display: flex;  
-  justify-content: center; 
-  align-items: center;     
+  font-family: Inter, sans-serif;
+  background: #f4f1ff;
 }
 
-.inProgressButton img,
-.doneButton img {
-  width: 32px;
-  height: 32px;
-  object-fit: contain;
-  display: block;
+body {
+  overflow-x: hidden;
 }
 
-.inProgressButton:hover {
-  background: #3a3f48;
+.routeWrapper {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
 }
 
-.doneButton:hover {
-  background: #3a3f48;
-}
-
-.addButton {
-  padding: 14px 20px;
-  font-size: 16px;
-
-  border-radius: 10px;
-  border: 1px solid #23272e;
-
-  background-color: #23272e;
-  color: #e5e7eb;
-
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.addButton:hover {
-  background-color: #3a3f48;
-}
-
-
-/* Status buttons */
-.icon {
-  width: 26px;
-  height: 26px;
-  fill: none;
-  stroke-width: 2;
-}
-
-.icon-progress circle,
-.icon-progress path {
-  stroke: #f59e0b;
-}
-
-.icon-done circle,
-.icon-done path {
-  stroke: #22c55e;
-}
-
-.inProgressButton:hover .icon-progress {
-  transform: scale(1.1);
-}
-
-.doneButton:hover .icon-done {
-  transform: scale(1.1);
+.pageSlide {
+  position: absolute;
+  inset: 0;
+  width: 100vw;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
 }
