@@ -1,4 +1,7 @@
 import "./App.css";
+import checkMark from "./assets/checkMark.png"
+import inProgress from "./assets/inProgress.png"
+import xMark from "./assets/xMark.png"
 
 function App() {
   return (
@@ -22,8 +25,8 @@ function App() {
                   <span>Example Task</span>
 
                   <div className="taskButtons">
-                    <button className="inProgressButton">🟡</button>
-                    <button className="doneButton">✅</button>
+                    <button className="inProgressButton"><img src={inProgress}/></button>
+                    <button className="doneButton"><img src={checkMark}/></button>
                   </div>
                 </div>
               </div>
