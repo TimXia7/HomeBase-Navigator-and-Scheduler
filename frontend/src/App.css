@@ -1,4 +1,4 @@
-/* global reset */
+
 html, body {
   margin: 0;
   padding: 0;
@@ -6,17 +6,22 @@ html, body {
   background: #f4f1ff;
 }
 
-/* app container */
-.appShell {
+body {
+  overflow-x: hidden;
+}
+
+.routeWrapper {
   position: relative;
   min-height: 100vh;
   overflow: hidden;
 }
 
-/* shared page animation base */
-.page {
+.pageSlide {
   position: absolute;
-  width: 100%;
-  top: 0;
-  left: 0;
+  inset: 0;
+  width: 100vw;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
 }

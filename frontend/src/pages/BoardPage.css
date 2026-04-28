@@ -12,8 +12,11 @@ body {
   min-height: 80vh;
   margin: 40px auto;
   display: grid;
-  grid-template-columns: 1fr 180px;
   gap: 16px;
+}
+
+.boardLayout {
+  grid-template-columns: 1fr 180px;
 }
 
 .boardPanel,
