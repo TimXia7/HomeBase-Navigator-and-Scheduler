@@ -16,15 +16,15 @@ section {
 
 .mainContainer {
   margin-top: 4%;
-  background: #1f232b;         
-  color: #e5e7eb;
-
+  background: #ffffff;
+  color: #1f1f2e;
+  
   border-radius: 10px;
   width: 50%;
   padding: 40px;
 
-  border: 1px solid #2c313a;     
-  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+  border: 1px solid #d8d2ee;
+  box-shadow: 0 10px 30px rgba(60, 50, 90, 0.15);
 }
 
 input {
@@ -55,16 +55,16 @@ button {
   font-size: 16px;
 
   border-radius: 10px;
-  border: 1px solid #2c313a;
+  border: 1px solid #cfc8e8;
 
-  background: #2a2f38;
-  color: #e5e7eb;
+  background: #faf9ff;
+  color: #1f1f2e;
 
   margin-right: 10px;
 }
 
 .entryBox::placeholder {
-  color: #9ca3af;
+  color: #8a849b;
 }
 
 .taskContainer {
@@ -79,11 +79,12 @@ button {
   justify-content: space-between;
   align-items: center;
 
-  background: #2a2f38;
+  background: #3E4552;
+  color: #e5e7eb;
   padding: 15px;
   border-radius: 10px;
 
-  border: 1px solid #2c313a;
+  border: 1px solid #d8d2ee;
 }
 
 .taskButtons {
@@ -146,4 +147,31 @@ button {
 
 .addButton:hover {
   background-color: #3a3f48;
+}
+
+
+/* Status buttons */
+.icon {
+  width: 26px;
+  height: 26px;
+  fill: none;
+  stroke-width: 2;
+}
+
+.icon-progress circle,
+.icon-progress path {
+  stroke: #f59e0b;
+}
+
+.icon-done circle,
+.icon-done path {
+  stroke: #22c55e;
+}
+
+.inProgressButton:hover .icon-progress {
+  transform: scale(1.1);
+}
+
+.doneButton:hover .icon-done {
+  transform: scale(1.1);
 }

@@ -25,8 +25,19 @@ function App() {
                   <span>Example Task</span>
 
                   <div className="taskButtons">
-                    <button className="inProgressButton"><img src={inProgress}/></button>
-                    <button className="doneButton"><img src={checkMark}/></button>
+                    <button className="inProgressButton">  
+                      <svg className="icon icon-progress" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M12 6v6l4 2" />
+                      </svg>
+                    </button>
+
+                    <button className="doneButton">
+                      <svg className="icon icon-done" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M8 12l3 3 5-6" />
+                      </svg>
+                    </button>
                   </div>
                 </div>
               </div>
