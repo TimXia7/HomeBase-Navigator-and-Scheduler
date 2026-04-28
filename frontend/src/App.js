@@ -1,4 +1,7 @@
-import './App.css';
+import "./App.css";
+import checkMark from "./assets/checkMark.png"
+import inProgress from "./assets/inProgress.png"
+import xMark from "./assets/xMark.png"
 
 function App() {
   return (
@@ -22,19 +25,24 @@ function App() {
                   <span>Example Task</span>
 
                   <div className="taskButtons">
-                    <button class="inProgressButton" className="taskBtn"></button>
-                    <button class="doneButton" className="taskBtn"></button>
+                    <button className="inProgressButton">  
+                      <svg className="icon icon-progress" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M12 6v6l4 2" />
+                      </svg>
+                    </button>
+
+                    <button className="doneButton">
+                      <svg className="icon icon-done" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M8 12l3 3 5-6" />
+                      </svg>
+                    </button>
                   </div>
                 </div>
               </div>
             </section>
 
-            {/* <section>
-              <h2>Map</h2>
-              <div style={{ height: "300px", background: "#eee" }}>
-                Map placeholder
-              </div>
-            </section> */}
           </main>
         </div>
     </div>

@@ -3,12 +3,12 @@
 html, body {
   height: 100%;
   margin: 0;
-  background: linear-gradient(to bottom, #1e1e2f, #3a3a5a);
+  background: linear-gradient(to bottom, #f4f1ff, #ffffff);
 }
 
 body {
   font-family: 'Inter', sans-serif;
-  color: white;
+  color: #1f1f2e;
 }
 
 h1 {

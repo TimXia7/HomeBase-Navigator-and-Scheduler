@@ -15,13 +15,16 @@ section {
 }
 
 .mainContainer {
-  background: #817d99;
-  color: black;
-  outline: 1px solid black;
-  border-radius: 20px;
+  margin-top: 4%;
+  background: #ffffff;
+  color: #1f1f2e;
+  
+  border-radius: 10px;
   width: 50%;
-  padding: 50px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+  padding: 40px;
+
+  border: 1px solid #d8d2ee;
+  box-shadow: 0 10px 30px rgba(60, 50, 90, 0.15);
 }
 
 input {
@@ -38,25 +41,30 @@ input {
 
 button {
   padding: 14px 20px;
-  font-size: 16px;
-
-  border: none;
-  border-radius: 10px;
-
-  background-color: #7c7cff;
-  color: white;
-
-  cursor: pointer;
-  transition: 0.2s;
 }
 
-button:hover {
-  background-color: #5a5ae6;
-}
 
 .inputRow {
   display: flex;
   align-items: center;
+}
+
+.entryBox {
+  width: 100%;
+  padding: 14px;
+  font-size: 16px;
+
+  border-radius: 10px;
+  border: 1px solid #cfc8e8;
+
+  background: #faf9ff;
+  color: #1f1f2e;
+
+  margin-right: 10px;
+}
+
+.entryBox::placeholder {
+  color: #8a849b;
 }
 
 .taskContainer {
@@ -70,11 +78,13 @@ button:hover {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  outline: 1px solid #4f4d61;
 
-  background: #6e6b85;
+  background: #3E4552;
+  color: #e5e7eb;
   padding: 15px;
   border-radius: 10px;
+
+  border: 1px solid #d8d2ee;
 }
 
 .taskButtons {
@@ -82,34 +92,86 @@ button:hover {
   gap: 10px;
 }
 
-.taskBtn {
+.inProgressButton,
+.doneButton {
   width: 35px;
   height: 35px;
 
-  border: none;
   border-radius: 8px;
+  border: 1px solid #23272e;
 
-  background: #8884a8;
+  background: #1f232b;
+  cursor: pointer;
+  transition: 0.2s;
+
+  background: none;
+  border: none;
+  outline: none;
+
+  padding: 0;
+
+  display: flex;  
+  justify-content: center; 
+  align-items: center;     
+}
+
+.inProgressButton img,
+.doneButton img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  display: block;
+}
+
+.inProgressButton:hover {
+  background: #3a3f48;
+}
+
+.doneButton:hover {
+  background: #3a3f48;
+}
+
+.addButton {
+  padding: 14px 20px;
+  font-size: 16px;
+
+  border-radius: 10px;
+  border: 1px solid #23272e;
+
+  background-color: #23272e;
+  color: #e5e7eb;
+
   cursor: pointer;
   transition: 0.2s;
 }
 
-.taskBtn:hover {
-  background: #5a5ae6;
+.addButton:hover {
+  background-color: #3a3f48;
 }
 
-.entryBox{
-  outline: 1px solid #4f4d61;
+
+/* Status buttons */
+.icon {
+  width: 26px;
+  height: 26px;
+  fill: none;
+  stroke-width: 2;
 }
 
-.addButton {
-  outline: 1px solid #4f4d61;
+.icon-progress circle,
+.icon-progress path {
+  stroke: #f59e0b;
 }
 
-.inProgressButton {
-  outline: 1px solid #4f4d61;
+.icon-done circle,
+.icon-done path {
+  stroke: #22c55e;
 }
 
-.doneButton {
-  outline: 1px solid #4f4d61;
+.inProgressButton:hover .icon-progress {
+  transform: scale(1.1);
+}
+
+.doneButton:hover .icon-done {
+  transform: scale(1.1);
 }
