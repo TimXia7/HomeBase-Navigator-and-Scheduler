@@ -1,41 +1,20 @@
-import "./App.css";
+import { Routes, Route, useLocation } from "react-router-dom";
+import { AnimatePresence } from "framer-motion";
+
+import BoardPage from "./pages/BoardPage";
+import MapPage from "./pages/MapPage";
 
 function App() {
+  const location = useLocation();
+
   return (
     <div className="appShell">
-      <div className="boardPanel">
-        <header className="topBar">
-          <h1>HomeBase</h1>
-
-          <div className="taskInput">
-            <input placeholder="Add a new task..." />
-            <button>Add</button>
-          </div>
-        </header>
-
-        <main className="board">
-          <section className="column">
-            <h2>New Tasks</h2>
-
-            <div className="taskCard">
-              <p>Example task</p>
-              <span>No location yet</span>
-            </div>
-          </section>
-
-          <section className="column">
-            <h2>In Progress</h2>
-          </section>
-
-          <section className="column">
-            <h2>Finished</h2>
-          </section>
-        </main>
-      </div>
-
-      <aside className="mapPanel">
-        <button className="mapButton">To Map</button>
-      </aside>
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname}>
+          <Route path="/" element={<BoardPage />} />
+          <Route path="/map" element={<MapPage />} />
+        </Routes>
+      </AnimatePresence>
     </div>
   );
 }
