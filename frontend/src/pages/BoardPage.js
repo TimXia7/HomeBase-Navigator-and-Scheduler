@@ -38,36 +38,40 @@ function Column({ id, title, tasks, isCollapsed, onToggleCollapse }) {
   const { setNodeRef } = useDroppable({ id });
 
   return (
-    <section
+    <motion.section
+      layout="position"
       ref={setNodeRef}
       className={`column ${isCollapsed ? "columnCollapsed" : ""}`}
+      transition={{ duration: 0.25, ease: "easeInOut" }}
     >
-      {isCollapsed ? (
-        <button
-          className="collapsedColumnButton"
-          onClick={() => onToggleCollapse(id)}
-        >
-          + {title}
-        </button>
-      ) : (
-        <>
-          <div className="columnHeader">
-            <h2>{title}</h2>
+      <motion.div layout="position">
+        {isCollapsed ? (
+          <button
+            className="collapsedColumnButton"
+            onClick={() => onToggleCollapse(id)}
+          >
+            + {title}
+          </button>
+        ) : (
+          <>
+            <div className="columnHeader">
+              <h2>{title}</h2>
 
-            <button
-              className="collapseButton"
-              onClick={() => onToggleCollapse(id)}
-            >
-              −
-            </button>
-          </div>
+              <button
+                className="collapseButton"
+                onClick={() => onToggleCollapse(id)}
+              >
+                −
+              </button>
+            </div>
 
-          {tasks.map((task) => (
-            <TaskCard key={task.id} task={task} />
-          ))}
-        </>
-      )}
-    </section>
+            {tasks.map((task) => (
+              <TaskCard key={task.id} task={task} />
+            ))}
+          </>
+        )}
+      </motion.div>
+    </motion.section>
   );
 }
 
