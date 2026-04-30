@@ -44,7 +44,7 @@ function Column({ id, title, tasks, isCollapsed, onToggleCollapse }) {
       className={`column ${isCollapsed ? "columnCollapsed" : ""}`}
       transition={{ duration: 0.25, ease: "easeInOut" }}
     >
-      <motion.div layout="position">
+      <div>
         {isCollapsed ? (
           <button
             className="collapsedColumnButton"
@@ -70,7 +70,7 @@ function Column({ id, title, tasks, isCollapsed, onToggleCollapse }) {
             ))}
           </>
         )}
-      </motion.div>
+      </div>
     </motion.section>
   );
 }
@@ -143,10 +143,13 @@ function BoardPage() {
     { id: "finished", title: "Finished", tasks: columns.finished },
   ];
 
-  const orderedColumns = [
-    ...columnInfo.filter((column) => !collapsedColumns[column.id]),
-    ...columnInfo.filter((column) => collapsedColumns[column.id]),
-  ];
+  const expandedColumns = columnInfo.filter(
+    (column) => !collapsedColumns[column.id]
+  );
+
+  const minimizedColumns = columnInfo.filter(
+    (column) => collapsedColumns[column.id]
+  );
 
   return (
     <motion.div
@@ -167,16 +170,31 @@ function BoardPage() {
 
           <DndContext onDragEnd={handleDragEnd}>
             <main className="board">
-              {orderedColumns.map((column) => (
+              {expandedColumns.map((column) => (
                 <Column
                   key={column.id}
                   id={column.id}
                   title={column.title}
                   tasks={column.tasks}
-                  isCollapsed={collapsedColumns[column.id]}
+                  isCollapsed={false}
                   onToggleCollapse={toggleColumn}
                 />
               ))}
+
+              {minimizedColumns.length > 0 && (
+                <div className="collapsedColumnsArea">
+                  {minimizedColumns.map((column) => (
+                    <Column
+                      key={column.id}
+                      id={column.id}
+                      title={column.title}
+                      tasks={column.tasks}
+                      isCollapsed={true}
+                      onToggleCollapse={toggleColumn}
+                    />
+                  ))}
+                </div>
+              )}
             </main>
           </DndContext>
         </div>

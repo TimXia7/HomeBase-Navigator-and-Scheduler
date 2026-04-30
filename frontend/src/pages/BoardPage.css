@@ -168,14 +168,30 @@ body {
   transform: translateY(-5px);
 }
 
+.collapsedColumnsArea {
+  flex: 0 0 150px;
+  min-width: 150px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+
+  align-self: flex-start;
+
+  margin-right: 14px;
+}
+
 .columnCollapsed {
-  flex: 0 0 140px;
-  min-width: 140px;
+  flex: none;
+  min-width: 100%;
+  min-height: auto;
+  align-self: auto;
+  padding: 10px;
 }
 
 .collapsedColumnButton {
   width: 100%;
-  height: 60px;
+  min-height: 56px;
   border: none;
   border-radius: 10px;
   background: white;
