@@ -42,16 +42,31 @@ function Column({ id, title, tasks, isCollapsed, onToggleCollapse }) {
       ref={setNodeRef}
       className={`column ${isCollapsed ? "columnCollapsed" : ""}`}
     >
-      <div className="columnHeader">
-        <h2>{title}</h2>
-
-        <button className="collapseButton" onClick={() => onToggleCollapse(id)}>
-          {isCollapsed ? "Maximize" : "Minimize"}
+      {isCollapsed ? (
+        <button
+          className="collapsedColumnButton"
+          onClick={() => onToggleCollapse(id)}
+        >
+          + {title}
         </button>
-      </div>
+      ) : (
+        <>
+          <div className="columnHeader">
+            <h2>{title}</h2>
 
-      {!isCollapsed &&
-        tasks.map((task) => <TaskCard key={task.id} task={task} />)}
+            <button
+              className="collapseButton"
+              onClick={() => onToggleCollapse(id)}
+            >
+              −
+            </button>
+          </div>
+
+          {tasks.map((task) => (
+            <TaskCard key={task.id} task={task} />
+          ))}
+        </>
+      )}
     </section>
   );
 }
