@@ -71,13 +71,14 @@ body {
 
 .board {
   flex: 1;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
   gap: 18px;
 }
 
 .column {
-  min-height: 420px;
+  flex: 1;
+  min-width: 260px;
+  /* transition: all 0.25s ease; */
   background: #f7f5ff;
   border: 1px solid #d8d2ee;
   border-radius: 12px;
@@ -134,4 +135,78 @@ body {
 
 .taskCard:active {
   cursor: grabbing;
+}
+
+.columnHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.collapseButton {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: transparent;
+  border: none;
+  padding: 0;
+
+  color: #1f2937;
+  font-size: 18px;
+  font-weight: 700;
+
+  cursor: pointer;
+  transform: translateY(-4px);
+}
+
+.collapseButton:hover {
+  color: #6b7280;
+  transform: translateY(-5px);
+}
+
+.collapsedColumnsArea {
+  flex: 0 0 150px;
+  min-width: 150px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+
+  align-self: flex-start;
+
+  margin-right: 14px;
+}
+
+.columnCollapsed {
+  flex: none;
+  min-width: 100%;
+  min-height: auto;
+  align-self: auto;
+  padding: 10px;
+}
+
+.collapsedColumnButton {
+  width: 100%;
+  min-height: 56px;
+  border: none;
+  border-radius: 10px;
+  background: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.collapsedColumnsAreaEmpty {
+  flex: 0 0 0;
+  min-width: 0;
+  width: 0;
+  padding: 0;
+  margin-right: 0;
+  border: none;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
 }
