@@ -7,8 +7,6 @@ import {
   closestCenter,
   DragOverlay,
 } from "@dnd-kit/core";
-
-/* For draggable columns */
 import {
   SortableContext,
   horizontalListSortingStrategy,
@@ -16,10 +14,6 @@ import {
   arrayMove,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-
-import {
-  restrictToWindowEdges,
-} from "@dnd-kit/modifiers";
 
 import "./BoardPage.css";
 
@@ -64,7 +58,14 @@ function TaskCard({ task }) {
 }
 
 const SortableColumn = forwardRef(function SortableColumn(
-  { id, title, tasks, onToggleCollapse, isColumnDragActive },
+  {
+    id,
+    title,
+    tasks,
+    onToggleCollapse,
+    onDeleteColumn,
+    isColumnDragActive,
+  },
   forwardedRef
 ) {
   const {
@@ -120,7 +121,16 @@ const SortableColumn = forwardRef(function SortableColumn(
             </button>
 
             <button
+              className="deleteColumnButton"
+              type="button"
+              onClick={() => onDeleteColumn(id)}
+            >
+              🗑️
+            </button>
+
+            <button
               className="collapseButton"
+              type="button"
               onClick={() => onToggleCollapse(id)}
             >
               −
@@ -136,7 +146,7 @@ const SortableColumn = forwardRef(function SortableColumn(
   );
 });
 
-function CollapsedColumn({ id, title, onToggleCollapse }) {
+function CollapsedColumn({ id, title, onToggleCollapse, onDeleteColumn }) {
   return (
     <motion.section
       layout
@@ -146,12 +156,24 @@ function CollapsedColumn({ id, title, onToggleCollapse }) {
       exit={{ opacity: 0 }}
       transition={columnTransition}
     >
-      <div>
+      <div className="collapsedColumnContent">
         <button
           className="collapsedColumnButton"
+          type="button"
           onClick={() => onToggleCollapse(id)}
         >
           + {title}
+        </button>
+
+        <button
+          className="deleteCollapsedColumnButton"
+          type="button"
+          onClick={(event) => {
+            event.stopPropagation();
+            onDeleteColumn(id);
+          }}
+        >
+          🗑
         </button>
       </div>
     </motion.section>
@@ -161,6 +183,7 @@ function CollapsedColumn({ id, title, onToggleCollapse }) {
 function BoardPage() {
   const navigate = useNavigate();
 
+  const [newColumnTitle, setNewColumnTitle] = useState("");
   const [activeColumnId, setActiveColumnId] = useState(null);
   const [activeTask, setActiveTask] = useState(null);
 
@@ -169,6 +192,12 @@ function BoardPage() {
     "inProgress",
     "finished",
   ]);
+
+  const [columnTitles, setColumnTitles] = useState({
+    newTasks: "New Tasks",
+    inProgress: "In Progress",
+    finished: "Finished",
+  });
 
   const [collapsedColumns, setCollapsedColumns] = useState({
     newTasks: false,
@@ -188,11 +217,74 @@ function BoardPage() {
     finished: [],
   });
 
+  function handleAddColumn() {
+    const trimmedTitle = newColumnTitle.trim();
+
+    if (!trimmedTitle) return;
+
+    const columnId = `column-${crypto.randomUUID()}`;
+
+    setColumnOrder((prevOrder) => [...prevOrder, columnId]);
+
+    setColumnTitles((prevTitles) => ({
+      ...prevTitles,
+      [columnId]: trimmedTitle,
+    }));
+
+    setColumns((prevColumns) => ({
+      ...prevColumns,
+      [columnId]: [],
+    }));
+
+    setCollapsedColumns((prevCollapsedColumns) => ({
+      ...prevCollapsedColumns,
+      [columnId]: false,
+    }));
+
+    setNewColumnTitle("");
+  }
+
+  function handleDeleteColumn(columnId) {
+    setColumnOrder((prevOrder) =>
+      prevOrder.filter((currentColumnId) => currentColumnId !== columnId)
+    );
+
+    setColumnTitles((prevTitles) => {
+      const updatedTitles = { ...prevTitles };
+      delete updatedTitles[columnId];
+      return updatedTitles;
+    });
+
+    setColumns((prevColumns) => {
+      const updatedColumns = { ...prevColumns };
+      delete updatedColumns[columnId];
+      return updatedColumns;
+    });
+
+    setCollapsedColumns((prevCollapsedColumns) => {
+      const updatedCollapsedColumns = { ...prevCollapsedColumns };
+      delete updatedCollapsedColumns[columnId];
+      return updatedCollapsedColumns;
+    });
+  }
+
   function toggleColumn(columnId) {
     setCollapsedColumns((prev) => ({
       ...prev,
       [columnId]: !prev[columnId],
     }));
+  }
+
+  function findTaskById(taskId) {
+    for (const columnId in columns) {
+      const foundTask = columns[columnId].find((task) => task.id === taskId);
+
+      if (foundTask) {
+        return foundTask;
+      }
+    }
+
+    return null;
   }
 
   function handleDragStart(event) {
@@ -221,9 +313,8 @@ function BoardPage() {
   }
 
   function handleDragEnd(event) {
-    handleDragCancel();
-
     setActiveColumnId(null);
+    setActiveTask(null);
 
     const { active, over } = event;
 
@@ -286,37 +377,11 @@ function BoardPage() {
     }));
   }
 
-  function findTaskById(taskId) {
-    for (const columnId in columns) {
-      const foundTask = columns[columnId].find((task) => task.id === taskId);
-
-      if (foundTask) {
-        return foundTask;
-      }
-    }
-
-    return null;
-  }
-
-  const columnData = {
-    newTasks: {
-      id: "newTasks",
-      title: "New Tasks",
-      tasks: columns.newTasks,
-    },
-    inProgress: {
-      id: "inProgress",
-      title: "In Progress",
-      tasks: columns.inProgress,
-    },
-    finished: {
-      id: "finished",
-      title: "Finished",
-      tasks: columns.finished,
-    },
-  };
-
-  const columnInfo = columnOrder.map((columnId) => columnData[columnId]);
+  const columnInfo = columnOrder.map((columnId) => ({
+    id: columnId,
+    title: columnTitles[columnId],
+    tasks: columns[columnId] || [],
+  }));
 
   const expandedColumns = columnInfo.filter(
     (column) => !collapsedColumns[column.id]
@@ -337,15 +402,30 @@ function BoardPage() {
       <div className="appShell boardNavBar">
         <div className="boardPanel">
           <header className="topBar">
-            <div className="taskInput">
-              <input placeholder="Add a new task..." />
-              <button>Add</button>
+            <div className="inputOptions">
+              <div className="inputGroup">
+                <input placeholder="Add a new task..." />
+                <button>Add Task</button>
+              </div>
+
+              <div className="inputGroup">
+                <input
+                  placeholder="Add a new column..."
+                  value={newColumnTitle}
+                  onChange={(event) => setNewColumnTitle(event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      handleAddColumn();
+                    }
+                  }}
+                />
+                <button onClick={handleAddColumn}>Add Column</button>
+              </div>
             </div>
           </header>
 
           <DndContext
             collisionDetection={closestCenter}
-            modifiers={[restrictToWindowEdges]}
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
             onDragCancel={handleDragCancel}
@@ -364,6 +444,7 @@ function BoardPage() {
                         title={column.title}
                         tasks={column.tasks}
                         onToggleCollapse={toggleColumn}
+                        onDeleteColumn={handleDeleteColumn}
                         isColumnDragActive={activeColumnId !== null}
                       />
                     ))}
@@ -386,12 +467,14 @@ function BoardPage() {
                         id={column.id}
                         title={column.title}
                         onToggleCollapse={toggleColumn}
+                        onDeleteColumn={handleDeleteColumn}
                       />
                     ))}
                   </AnimatePresence>
                 </motion.div>
               </LayoutGroup>
             </main>
+
             <DragOverlay>
               {activeTask ? (
                 <div className="taskCard taskCardOverlay">
