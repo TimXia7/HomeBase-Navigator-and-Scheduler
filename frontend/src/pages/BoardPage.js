@@ -133,6 +133,17 @@ function BoardPage() {
     }));
   }
 
+  const columnInfo = [
+    { id: "newTasks", title: "New Tasks", tasks: columns.newTasks },
+    { id: "inProgress", title: "In Progress", tasks: columns.inProgress },
+    { id: "finished", title: "Finished", tasks: columns.finished },
+  ];
+
+  const orderedColumns = [
+    ...columnInfo.filter((column) => !collapsedColumns[column.id]),
+    ...columnInfo.filter((column) => collapsedColumns[column.id]),
+  ];
+
   return (
     <motion.div
       className="pageSlide"
@@ -152,29 +163,16 @@ function BoardPage() {
 
           <DndContext onDragEnd={handleDragEnd}>
             <main className="board">
-              <Column
-                id="newTasks"
-                title="New Tasks"
-                tasks={columns.newTasks}
-                isCollapsed={collapsedColumns.newTasks}
-                onToggleCollapse={toggleColumn}
-              />
-
-              <Column
-                id="inProgress"
-                title="In Progress"
-                tasks={columns.inProgress}
-                isCollapsed={collapsedColumns.inProgress}
-                onToggleCollapse={toggleColumn}
-              />
-
-              <Column
-                id="finished"
-                title="Finished"
-                tasks={columns.finished}
-                isCollapsed={collapsedColumns.finished}
-                onToggleCollapse={toggleColumn}
-              />
+              {orderedColumns.map((column) => (
+                <Column
+                  key={column.id}
+                  id={column.id}
+                  title={column.title}
+                  tasks={column.tasks}
+                  isCollapsed={collapsedColumns[column.id]}
+                  onToggleCollapse={toggleColumn}
+                />
+              ))}
             </main>
           </DndContext>
         </div>
