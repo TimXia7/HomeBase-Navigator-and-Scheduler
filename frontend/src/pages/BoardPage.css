@@ -115,6 +115,15 @@ body {
   color: #6b7280;
 }
 
+.taskCardDragging {
+  opacity: 0.35;
+}
+
+.taskCardOverlay {
+  cursor: grabbing;
+  z-index: 9999;
+}
+
 .mapPanel {
   display: flex;
   justify-content: center;

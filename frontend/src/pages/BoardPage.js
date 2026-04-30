@@ -5,6 +5,7 @@ import {
   DndContext,
   useDraggable,
   closestCenter,
+  DragOverlay,
 } from "@dnd-kit/core";
 
 /* For draggable columns */
@@ -45,21 +46,14 @@ const stackTransition = {
 };
 
 function TaskCard({ task }) {
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: task.id,
   });
-
-  const style = transform
-    ? {
-        transform: `translate(${transform.x}px, ${transform.y}px)`,
-      }
-    : undefined;
 
   return (
     <div
       ref={setNodeRef}
-      style={style}
-      className="taskCard"
+      className={`taskCard ${isDragging ? "taskCardDragging" : ""}`}
       {...listeners}
       {...attributes}
     >
@@ -168,6 +162,7 @@ function BoardPage() {
   const navigate = useNavigate();
 
   const [activeColumnId, setActiveColumnId] = useState(null);
+  const [activeTask, setActiveTask] = useState(null);
 
   const [columnOrder, setColumnOrder] = useState([
     "newTasks",
@@ -209,14 +204,25 @@ function BoardPage() {
 
     if (expandedColumnIds.includes(activeId)) {
       setActiveColumnId(activeId);
+      setActiveTask(null);
+      return;
+    }
+
+    const task = findTaskById(activeId);
+
+    if (task) {
+      setActiveTask(task);
     }
   }
 
   function handleDragCancel() {
     setActiveColumnId(null);
+    setActiveTask(null);
   }
 
   function handleDragEnd(event) {
+    handleDragCancel();
+
     setActiveColumnId(null);
 
     const { active, over } = event;
@@ -278,6 +284,18 @@ function BoardPage() {
       ),
       [destinationColumn]: [...prevColumns[destinationColumn], movedTask],
     }));
+  }
+
+  function findTaskById(taskId) {
+    for (const columnId in columns) {
+      const foundTask = columns[columnId].find((task) => task.id === taskId);
+
+      if (foundTask) {
+        return foundTask;
+      }
+    }
+
+    return null;
   }
 
   const columnData = {
@@ -374,6 +392,14 @@ function BoardPage() {
                 </motion.div>
               </LayoutGroup>
             </main>
+            <DragOverlay>
+              {activeTask ? (
+                <div className="taskCard taskCardOverlay">
+                  <p>{activeTask.title}</p>
+                  <span>{activeTask.location}</span>
+                </div>
+              ) : null}
+            </DragOverlay>
           </DndContext>
         </div>
 
