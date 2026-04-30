@@ -104,11 +104,15 @@ body {
   flex: 1;
   display: flex;
   gap: 18px;
+  min-height: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 10px;
 }
 
 .column {
   flex: 1;
-  min-width: 260px;
+  min-width: 200px;
   background: #f7f5ff;
   border: 1px solid #d8d2ee;
   border-radius: 12px;
@@ -240,8 +244,8 @@ body {
 }
 
 .collapsedColumnsArea {
-  flex: 0 0 150px;
-  min-width: 150px;
+  flex: 0 0 130px;
+  min-width: 130px;
 
   display: flex;
   flex-direction: column;
@@ -249,7 +253,7 @@ body {
 
   align-self: flex-start;
 
-  margin-right: 14px;
+  margin-right: 24px;
 }
 
 .columnCollapsed {
@@ -280,4 +284,46 @@ body {
   overflow: hidden;
   opacity: 0;
   pointer-events: none;
+}
+
+.deleteColumnButton {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: transparent;
+  border: none;
+  padding: 0;
+
+  color: #6b7280;
+  font-size: 15px;
+
+  cursor: pointer;
+  transform: translateY(-4px);
+}
+
+.deleteColumnButton:hover {
+  color: #dc2626;
+  transform: translateY(-5px);
+}
+
+.collapsedColumnContent {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.deleteCollapsedColumnButton {
+  width: 36px;
+  min-height: 56px;
+  border: none;
+  border-radius: 10px;
+  background: white;
+  cursor: pointer;
+}
+
+.deleteCollapsedColumnButton:hover {
+  color: #dc2626;
 }

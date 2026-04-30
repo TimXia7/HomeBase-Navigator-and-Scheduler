@@ -58,7 +58,14 @@ function TaskCard({ task }) {
 }
 
 const SortableColumn = forwardRef(function SortableColumn(
-  { id, title, tasks, onToggleCollapse, isColumnDragActive },
+  {
+    id,
+    title,
+    tasks,
+    onToggleCollapse,
+    onDeleteColumn,
+    isColumnDragActive,
+  },
   forwardedRef
 ) {
   const {
@@ -114,7 +121,16 @@ const SortableColumn = forwardRef(function SortableColumn(
             </button>
 
             <button
+              className="deleteColumnButton"
+              type="button"
+              onClick={() => onDeleteColumn(id)}
+            >
+              🗑️
+            </button>
+
+            <button
               className="collapseButton"
+              type="button"
               onClick={() => onToggleCollapse(id)}
             >
               −
@@ -130,7 +146,7 @@ const SortableColumn = forwardRef(function SortableColumn(
   );
 });
 
-function CollapsedColumn({ id, title, onToggleCollapse }) {
+function CollapsedColumn({ id, title, onToggleCollapse, onDeleteColumn }) {
   return (
     <motion.section
       layout
@@ -140,12 +156,24 @@ function CollapsedColumn({ id, title, onToggleCollapse }) {
       exit={{ opacity: 0 }}
       transition={columnTransition}
     >
-      <div>
+      <div className="collapsedColumnContent">
         <button
           className="collapsedColumnButton"
+          type="button"
           onClick={() => onToggleCollapse(id)}
         >
           + {title}
+        </button>
+
+        <button
+          className="deleteCollapsedColumnButton"
+          type="button"
+          onClick={(event) => {
+            event.stopPropagation();
+            onDeleteColumn(id);
+          }}
+        >
+          🗑
         </button>
       </div>
     </motion.section>
@@ -214,6 +242,30 @@ function BoardPage() {
     }));
 
     setNewColumnTitle("");
+  }
+
+  function handleDeleteColumn(columnId) {
+    setColumnOrder((prevOrder) =>
+      prevOrder.filter((currentColumnId) => currentColumnId !== columnId)
+    );
+
+    setColumnTitles((prevTitles) => {
+      const updatedTitles = { ...prevTitles };
+      delete updatedTitles[columnId];
+      return updatedTitles;
+    });
+
+    setColumns((prevColumns) => {
+      const updatedColumns = { ...prevColumns };
+      delete updatedColumns[columnId];
+      return updatedColumns;
+    });
+
+    setCollapsedColumns((prevCollapsedColumns) => {
+      const updatedCollapsedColumns = { ...prevCollapsedColumns };
+      delete updatedCollapsedColumns[columnId];
+      return updatedCollapsedColumns;
+    });
   }
 
   function toggleColumn(columnId) {
@@ -392,6 +444,7 @@ function BoardPage() {
                         title={column.title}
                         tasks={column.tasks}
                         onToggleCollapse={toggleColumn}
+                        onDeleteColumn={handleDeleteColumn}
                         isColumnDragActive={activeColumnId !== null}
                       />
                     ))}
@@ -414,6 +467,7 @@ function BoardPage() {
                         id={column.id}
                         title={column.title}
                         onToggleCollapse={toggleColumn}
+                        onDeleteColumn={handleDeleteColumn}
                       />
                     ))}
                   </AnimatePresence>
