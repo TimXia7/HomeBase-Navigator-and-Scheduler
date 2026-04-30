@@ -13,7 +13,7 @@ function MapPage() {
       exit={{ x: "100vw" }}
       transition={{ duration: 0.45, ease: "easeInOut" }}
     >
-      <div className="appShell mapLayout">
+      <div className="appShell mapNavBar">
         <aside className="mapPanel">
           <button className="mapButton" onClick={() => navigate("/")}>
             ← Back
@@ -21,10 +21,6 @@ function MapPage() {
         </aside>
 
         <div className="mapContainer">
-          <header className="mapHeader">
-            <h1>Map</h1>
-          </header>
-
           <div className="mapView">
             <div className="mapPlaceholder">Map will go here</div>
           </div>

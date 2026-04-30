@@ -10,12 +10,12 @@ body {
 .appShell {
   width: 90vw;
   min-height: 80vh;
-  margin: 40px auto;
+  margin: 16px auto;
   display: grid;
   gap: 16px;
 }
 
-.boardLayout {
+.boardNavBar {
   grid-template-columns: 1fr 180px;
 }
 

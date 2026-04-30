@@ -1,22 +1,20 @@
-import { Routes, Route, useLocation } from "react-router-dom";
-import { AnimatePresence } from "framer-motion";
+import { Routes, Route } from "react-router-dom";
 
+import NavBar from "./components/NavBar";
 import BoardPage from "./pages/BoardPage";
 import MapPage from "./pages/MapPage";
 
-import "./App.css"
+import "./App.css";
 
 function App() {
-  const location = useLocation();
-
   return (
     <div className="routeWrapper">
-      <AnimatePresence initial={false}>
-        <Routes location={location} key={location.pathname}>
+      <Routes>
+        <Route element={<NavBar />}>
           <Route path="/" element={<BoardPage />} />
           <Route path="/map" element={<MapPage />} />
-        </Routes>
-      </AnimatePresence>
+        </Route>
+      </Routes>
     </div>
   );
 }

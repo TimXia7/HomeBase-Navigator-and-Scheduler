@@ -106,11 +106,9 @@ function BoardPage() {
       exit={{ x: "-100vw" }}
       transition={{ duration: 0.45, ease: "easeInOut" }}
     >
-      <div className="appShell boardLayout">
+      <div className="appShell boardNavBar">
         <div className="boardPanel">
           <header className="topBar">
-            <h1>HomeBase</h1>
-
             <div className="taskInput">
               <input placeholder="Add a new task..." />
               <button>Add</button>
