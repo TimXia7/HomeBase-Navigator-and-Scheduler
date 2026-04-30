@@ -29,6 +29,8 @@ body {
 
 .boardPanel {
   padding: 24px;
+  display: flex;
+  flex-direction: column;
 }
 
 .topBar {
@@ -68,6 +70,7 @@ body {
 }
 
 .board {
+  flex: 1;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 18px;
