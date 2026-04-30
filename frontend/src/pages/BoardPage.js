@@ -34,24 +34,44 @@ function TaskCard({ task }) {
   );
 }
 
-function Column({ id, title, tasks }) {
-  const { setNodeRef } = useDroppable({
-    id,
-  });
+function Column({ id, title, tasks, isCollapsed, onToggleCollapse }) {
+  const { setNodeRef } = useDroppable({ id });
 
   return (
-    <section ref={setNodeRef} className="column">
-      <h2>{title}</h2>
+    <section
+      ref={setNodeRef}
+      className={`column ${isCollapsed ? "columnCollapsed" : ""}`}
+    >
+      <div className="columnHeader">
+        <h2>{title}</h2>
 
-      {tasks.map((task) => (
-        <TaskCard key={task.id} task={task} />
-      ))}
+        <button className="collapseButton" onClick={() => onToggleCollapse(id)}>
+          {isCollapsed ? "Maximize" : "Minimize"}
+        </button>
+      </div>
+
+      {!isCollapsed &&
+        tasks.map((task) => <TaskCard key={task.id} task={task} />)}
     </section>
   );
 }
 
 function BoardPage() {
   const navigate = useNavigate();
+
+  const [collapsedColumns, setCollapsedColumns] = useState({
+    newTasks: false,
+    inProgress: false,
+    finished: false,
+  });
+
+  function toggleColumn(columnId) {
+    setCollapsedColumns((prev) => ({
+      ...prev,
+      [columnId]: !prev[columnId],
+    }));
+  }
+
 
   const [columns, setColumns] = useState({
     newTasks: [
@@ -121,18 +141,24 @@ function BoardPage() {
                 id="newTasks"
                 title="New Tasks"
                 tasks={columns.newTasks}
+                isCollapsed={collapsedColumns.newTasks}
+                onToggleCollapse={toggleColumn}
               />
 
               <Column
                 id="inProgress"
                 title="In Progress"
                 tasks={columns.inProgress}
+                isCollapsed={collapsedColumns.inProgress}
+                onToggleCollapse={toggleColumn}
               />
 
               <Column
                 id="finished"
                 title="Finished"
                 tasks={columns.finished}
+                isCollapsed={collapsedColumns.finished}
+                onToggleCollapse={toggleColumn}
               />
             </main>
           </DndContext>

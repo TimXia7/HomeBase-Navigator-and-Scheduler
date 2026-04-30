@@ -135,3 +135,28 @@ body {
 .taskCard:active {
   cursor: grabbing;
 }
+
+.columnHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.collapseButton {
+  border: none;
+  border-radius: 8px;
+  padding: 6px 10px;
+  background: #1f2937;
+  color: white;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.collapseButton:hover {
+  background: #374151;
+}
+
+.columnCollapsed {
+  min-height: 60px;
+}
