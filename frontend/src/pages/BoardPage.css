@@ -5,6 +5,8 @@ body {
   font-family: Inter, Arial, sans-serif;
   background: #f4f1ff;
   color: #1f2937;
+
+  overflow-y: hidden;
 }
 
 .appShell {
@@ -78,11 +80,11 @@ body {
 .column {
   flex: 1;
   min-width: 260px;
-  /* transition: all 0.25s ease; */
   background: #f7f5ff;
   border: 1px solid #d8d2ee;
   border-radius: 12px;
   padding: 14px;
+  position: relative;
 }
 
 .column h2 {
@@ -96,6 +98,11 @@ body {
   border-radius: 10px;
   padding: 14px;
   box-shadow: 0 4px 12px rgba(60, 50, 90, 0.08);
+  cursor: grab;
+}
+
+.taskCard:active {
+  cursor: grabbing;
 }
 
 .taskCard p {
@@ -129,19 +136,43 @@ body {
   background: #374151;
 }
 
-.taskCard {
-  cursor: grab;
-}
-
-.taskCard:active {
-  cursor: grabbing;
-}
-
 .columnHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 12px;
+}
+
+.columnHeaderButtons {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.columnDragHandle {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: transparent;
+  border: none;
+  padding: 0;
+
+  color: #6b7280;
+  font-size: 16px;
+  font-weight: 700;
+
+  cursor: grab;
+}
+
+.columnDragHandle:active {
+  cursor: grabbing;
+}
+
+.columnDragHandle:hover {
+  color: #1f2937;
 }
 
 .collapseButton {

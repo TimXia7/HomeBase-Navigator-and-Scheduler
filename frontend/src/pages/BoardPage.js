@@ -4,8 +4,21 @@ import { useNavigate } from "react-router-dom";
 import {
   DndContext,
   useDraggable,
-  useDroppable,
+  closestCenter,
 } from "@dnd-kit/core";
+
+/* For draggable columns */
+import {
+  SortableContext,
+  horizontalListSortingStrategy,
+  useSortable,
+  arrayMove,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+
+import {
+  restrictToWindowEdges,
+} from "@dnd-kit/modifiers";
 
 import "./BoardPage.css";
 
@@ -56,11 +69,20 @@ function TaskCard({ task }) {
   );
 }
 
-const Column = forwardRef(function Column(
-  { id, title, tasks, isCollapsed, onToggleCollapse },
+const SortableColumn = forwardRef(function SortableColumn(
+  { id, title, tasks, onToggleCollapse, isColumnDragActive },
   forwardedRef
 ) {
-  const { setNodeRef } = useDroppable({ id });
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
+    id,
+  });
 
   function setRefs(node) {
     setNodeRef(node);
@@ -72,49 +94,86 @@ const Column = forwardRef(function Column(
     }
   }
 
+  const style = {
+    transform: transform ? CSS.Transform.toString(transform) : undefined,
+    transition,
+    zIndex: isDragging ? 20 : undefined,
+  };
+
   return (
     <motion.section
-      layout
+      layout={isColumnDragActive ? false : true}
       ref={setRefs}
-      className={`column ${isCollapsed ? "columnCollapsed" : ""}`}
+      style={style}
+      className="column"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={columnTransition}
     >
       <div>
-        {isCollapsed ? (
-          <button
-            className="collapsedColumnButton"
-            onClick={() => onToggleCollapse(id)}
-          >
-            + {title}
-          </button>
-        ) : (
-          <>
-            <div className="columnHeader">
-              <h2>{title}</h2>
+        <div className="columnHeader">
+          <h2>{title}</h2>
 
-              <button
-                className="collapseButton"
-                onClick={() => onToggleCollapse(id)}
-              >
-                −
-              </button>
-            </div>
+          <div className="columnHeaderButtons">
+            <button
+              className="columnDragHandle"
+              type="button"
+              {...attributes}
+              {...listeners}
+            >
+              ⋮⋮
+            </button>
 
-            {tasks.map((task) => (
-              <TaskCard key={task.id} task={task} />
-            ))}
-          </>
-        )}
+            <button
+              className="collapseButton"
+              onClick={() => onToggleCollapse(id)}
+            >
+              −
+            </button>
+          </div>
+        </div>
+
+        {tasks.map((task) => (
+          <TaskCard key={task.id} task={task} />
+        ))}
       </div>
     </motion.section>
   );
 });
 
+function CollapsedColumn({ id, title, onToggleCollapse }) {
+  return (
+    <motion.section
+      layout
+      className="column columnCollapsed"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={columnTransition}
+    >
+      <div>
+        <button
+          className="collapsedColumnButton"
+          onClick={() => onToggleCollapse(id)}
+        >
+          + {title}
+        </button>
+      </div>
+    </motion.section>
+  );
+}
+
 function BoardPage() {
   const navigate = useNavigate();
+
+  const [activeColumnId, setActiveColumnId] = useState(null);
+
+  const [columnOrder, setColumnOrder] = useState([
+    "newTasks",
+    "inProgress",
+    "finished",
+  ]);
 
   const [collapsedColumns, setCollapsedColumns] = useState({
     newTasks: false,
@@ -141,13 +200,60 @@ function BoardPage() {
     }));
   }
 
+  function handleDragStart(event) {
+    const activeId = String(event.active.id);
+
+    const expandedColumnIds = columnOrder.filter(
+      (columnId) => !collapsedColumns[columnId]
+    );
+
+    if (expandedColumnIds.includes(activeId)) {
+      setActiveColumnId(activeId);
+    }
+  }
+
+  function handleDragCancel() {
+    setActiveColumnId(null);
+  }
+
   function handleDragEnd(event) {
+    setActiveColumnId(null);
+
     const { active, over } = event;
 
     if (!over) return;
 
-    const taskId = active.id;
-    const destinationColumn = over.id;
+    const activeId = String(active.id);
+    const overId = String(over.id);
+
+    const expandedColumnIds = columnOrder.filter(
+      (columnId) => !collapsedColumns[columnId]
+    );
+
+    if (
+      expandedColumnIds.includes(activeId) &&
+      expandedColumnIds.includes(overId)
+    ) {
+      if (activeId !== overId) {
+        setColumnOrder((prevOrder) => {
+          const oldIndex = prevOrder.indexOf(activeId);
+          const newIndex = prevOrder.indexOf(overId);
+
+          return arrayMove(prevOrder, oldIndex, newIndex);
+        });
+      }
+
+      return;
+    }
+
+    if (expandedColumnIds.includes(activeId)) {
+      return;
+    }
+
+    const taskId = activeId;
+    const destinationColumn = overId;
+
+    if (!columns[destinationColumn]) return;
 
     let sourceColumn = null;
     let movedTask = null;
@@ -174,11 +280,25 @@ function BoardPage() {
     }));
   }
 
-  const columnInfo = [
-    { id: "newTasks", title: "New Tasks", tasks: columns.newTasks },
-    { id: "inProgress", title: "In Progress", tasks: columns.inProgress },
-    { id: "finished", title: "Finished", tasks: columns.finished },
-  ];
+  const columnData = {
+    newTasks: {
+      id: "newTasks",
+      title: "New Tasks",
+      tasks: columns.newTasks,
+    },
+    inProgress: {
+      id: "inProgress",
+      title: "In Progress",
+      tasks: columns.inProgress,
+    },
+    finished: {
+      id: "finished",
+      title: "Finished",
+      tasks: columns.finished,
+    },
+  };
+
+  const columnInfo = columnOrder.map((columnId) => columnData[columnId]);
 
   const expandedColumns = columnInfo.filter(
     (column) => !collapsedColumns[column.id]
@@ -205,24 +325,35 @@ function BoardPage() {
             </div>
           </header>
 
-          <DndContext onDragEnd={handleDragEnd}>
+          <DndContext
+            collisionDetection={closestCenter}
+            modifiers={[restrictToWindowEdges]}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+            onDragCancel={handleDragCancel}
+          >
             <main className="board">
               <LayoutGroup>
-                <AnimatePresence initial={false} mode="popLayout">
-                  {expandedColumns.map((column) => (
-                    <Column
-                      key={column.id}
-                      id={column.id}
-                      title={column.title}
-                      tasks={column.tasks}
-                      isCollapsed={false}
-                      onToggleCollapse={toggleColumn}
-                    />
-                  ))}
-                </AnimatePresence>
+                <SortableContext
+                  items={expandedColumns.map((column) => column.id)}
+                  strategy={horizontalListSortingStrategy}
+                >
+                  <AnimatePresence initial={false} mode="popLayout">
+                    {expandedColumns.map((column) => (
+                      <SortableColumn
+                        key={column.id}
+                        id={column.id}
+                        title={column.title}
+                        tasks={column.tasks}
+                        onToggleCollapse={toggleColumn}
+                        isColumnDragActive={activeColumnId !== null}
+                      />
+                    ))}
+                  </AnimatePresence>
+                </SortableContext>
 
                 <motion.div
-                  layout
+                  layout={activeColumnId !== null ? false : true}
                   className={`collapsedColumnsArea ${
                     minimizedColumns.length === 0
                       ? "collapsedColumnsAreaEmpty"
@@ -232,12 +363,10 @@ function BoardPage() {
                 >
                   <AnimatePresence initial={false}>
                     {minimizedColumns.map((column) => (
-                      <Column
+                      <CollapsedColumn
                         key={column.id}
                         id={column.id}
                         title={column.title}
-                        tasks={column.tasks}
-                        isCollapsed={true}
                         onToggleCollapse={toggleColumn}
                       />
                     ))}
