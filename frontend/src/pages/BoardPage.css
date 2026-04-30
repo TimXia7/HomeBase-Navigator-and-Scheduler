@@ -46,13 +46,23 @@ body {
   margin: 0;
 }
 
-.taskInput {
-  display: flex;
-  gap: 10px;
-  max-width: 520px;
+.inputOptions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 36px;
+  width: 100%;
 }
 
-.taskInput input {
+.inputGroup {
+  display: flex;
+  gap: 10px;
+}
+
+.topBar {
+  margin-bottom: 18px;
+}
+
+.inputGroup input {
   flex: 1;
   padding: 14px;
   border: 1px solid #cfc8e8;
@@ -61,7 +71,26 @@ body {
   font-size: 16px;
 }
 
-.taskInput button {
+.inputGroup button {
+  padding: 14px 22px;
+  border: none;
+  border-radius: 10px;
+  background: #1f2937;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.inputOptions input {
+  flex: 1;
+  padding: 14px;
+  border: 1px solid #cfc8e8;
+  border-radius: 10px;
+  background: #faf9ff;
+  font-size: 16px;
+}
+
+.inputOptions button {
   padding: 14px 22px;
   border: none;
   border-radius: 10px;
