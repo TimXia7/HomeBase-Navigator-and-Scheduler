@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { motion } from "framer-motion";
+import { useState, forwardRef } from "react";
+import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import {
   DndContext,
@@ -8,6 +8,28 @@ import {
 } from "@dnd-kit/core";
 
 import "./BoardPage.css";
+
+const columnTransition = {
+  layout: {
+    duration: 0.2,
+    ease: "easeInOut",
+  },
+  opacity: {
+    duration: 0.2,
+    ease: "easeInOut",
+  },
+};
+
+const stackTransition = {
+  layout: {
+    duration: 0.2,
+    ease: "easeInOut",
+  },
+  opacity: {
+    duration: 0.2,
+    ease: "easeInOut",
+  },
+};
 
 function TaskCard({ task }) {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
@@ -34,15 +56,31 @@ function TaskCard({ task }) {
   );
 }
 
-function Column({ id, title, tasks, isCollapsed, onToggleCollapse }) {
+const Column = forwardRef(function Column(
+  { id, title, tasks, isCollapsed, onToggleCollapse },
+  forwardedRef
+) {
   const { setNodeRef } = useDroppable({ id });
+
+  function setRefs(node) {
+    setNodeRef(node);
+
+    if (typeof forwardedRef === "function") {
+      forwardedRef(node);
+    } else if (forwardedRef) {
+      forwardedRef.current = node;
+    }
+  }
 
   return (
     <motion.section
-      layout="position"
-      ref={setNodeRef}
+      layout
+      ref={setRefs}
       className={`column ${isCollapsed ? "columnCollapsed" : ""}`}
-      transition={{ duration: 0.25, ease: "easeInOut" }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={columnTransition}
     >
       <div>
         {isCollapsed ? (
@@ -73,7 +111,7 @@ function Column({ id, title, tasks, isCollapsed, onToggleCollapse }) {
       </div>
     </motion.section>
   );
-}
+});
 
 function BoardPage() {
   const navigate = useNavigate();
@@ -83,14 +121,6 @@ function BoardPage() {
     inProgress: false,
     finished: false,
   });
-
-  function toggleColumn(columnId) {
-    setCollapsedColumns((prev) => ({
-      ...prev,
-      [columnId]: !prev[columnId],
-    }));
-  }
-
 
   const [columns, setColumns] = useState({
     newTasks: [
@@ -103,6 +133,13 @@ function BoardPage() {
     inProgress: [],
     finished: [],
   });
+
+  function toggleColumn(columnId) {
+    setCollapsedColumns((prev) => ({
+      ...prev,
+      [columnId]: !prev[columnId],
+    }));
+  }
 
   function handleDragEnd(event) {
     const { active, over } = event;
@@ -170,31 +207,43 @@ function BoardPage() {
 
           <DndContext onDragEnd={handleDragEnd}>
             <main className="board">
-              {expandedColumns.map((column) => (
-                <Column
-                  key={column.id}
-                  id={column.id}
-                  title={column.title}
-                  tasks={column.tasks}
-                  isCollapsed={false}
-                  onToggleCollapse={toggleColumn}
-                />
-              ))}
-
-              {minimizedColumns.length > 0 && (
-                <div className="collapsedColumnsArea">
-                  {minimizedColumns.map((column) => (
+              <LayoutGroup>
+                <AnimatePresence initial={false} mode="popLayout">
+                  {expandedColumns.map((column) => (
                     <Column
                       key={column.id}
                       id={column.id}
                       title={column.title}
                       tasks={column.tasks}
-                      isCollapsed={true}
+                      isCollapsed={false}
                       onToggleCollapse={toggleColumn}
                     />
                   ))}
-                </div>
-              )}
+                </AnimatePresence>
+
+                <motion.div
+                  layout
+                  className={`collapsedColumnsArea ${
+                    minimizedColumns.length === 0
+                      ? "collapsedColumnsAreaEmpty"
+                      : ""
+                  }`}
+                  transition={stackTransition}
+                >
+                  <AnimatePresence initial={false}>
+                    {minimizedColumns.map((column) => (
+                      <Column
+                        key={column.id}
+                        id={column.id}
+                        title={column.title}
+                        tasks={column.tasks}
+                        isCollapsed={true}
+                        onToggleCollapse={toggleColumn}
+                      />
+                    ))}
+                  </AnimatePresence>
+                </motion.div>
+              </LayoutGroup>
             </main>
           </DndContext>
         </div>

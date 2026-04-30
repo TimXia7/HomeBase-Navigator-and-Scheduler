@@ -198,3 +198,15 @@ body {
   font-weight: 600;
   cursor: pointer;
 }
+
+.collapsedColumnsAreaEmpty {
+  flex: 0 0 0;
+  min-width: 0;
+  width: 0;
+  padding: 0;
+  margin-right: 0;
+  border: none;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
