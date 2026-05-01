@@ -1,6 +1,9 @@
+// Basic React/DOM libraries
 import { useState, forwardRef } from "react";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+
+// For dragging and dropping components
 import {
   DndContext,
   useDraggable,
@@ -15,8 +18,12 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
+// Associated css page 
 import "./BoardPage.css";
 
+/* Constants for task column animation/fade in and out 
+columnTransition = for columns minimized and maximized
+stackTransition = for the column of minimized task columns */
 const columnTransition = {
   layout: {
     duration: 0.2,
@@ -39,6 +46,10 @@ const stackTransition = {
   },
 };
 
+
+// REACT COMPONENTS: 
+
+// Component describes an individual task
 function TaskCard({ task }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: task.id,
@@ -48,6 +59,9 @@ function TaskCard({ task }) {
     <div
       ref={setNodeRef}
       className={`taskCard ${isDragging ? "taskCardDragging" : ""}`}
+
+      /* Below is not absolutely required, but it helps ensure that the draggable task remains draggable
+      Basically, I am ensuring the button contains all drag an drop attributes */
       {...listeners}
       {...attributes}
     >
@@ -57,17 +71,16 @@ function TaskCard({ task }) {
   );
 }
 
-const SortableColumn = forwardRef(function SortableColumn(
-  {
+// Component defines a sortable column: Main purpose is for the board columns like, New Tasks, Finished, etc.
+const SortableColumn = forwardRef(function SortableColumn({
     id,
     title,
     tasks,
     onToggleCollapse,
     onDeleteColumn,
     isColumnDragActive,
-  },
-  forwardedRef
-) {
+  }, forwardedRef ) 
+  {
   const {
     attributes,
     listeners,
@@ -79,6 +92,16 @@ const SortableColumn = forwardRef(function SortableColumn(
     id,
   });
 
+  const style = {
+    transform: transform ? CSS.Transform.toString(transform) : undefined,
+    transition,
+    zIndex: isDragging ? 20 : undefined,
+  };
+
+
+  // SortableColumn functions
+
+  // setRefs is used to correlate the correct column for drag and drop with the DOM 
   function setRefs(node) {
     setNodeRef(node);
 
@@ -89,12 +112,7 @@ const SortableColumn = forwardRef(function SortableColumn(
     }
   }
 
-  const style = {
-    transform: transform ? CSS.Transform.toString(transform) : undefined,
-    transition,
-    zIndex: isDragging ? 20 : undefined,
-  };
-
+  // SortableColumn component
   return (
     <motion.section
       layout={isColumnDragActive ? false : true}
@@ -137,7 +155,7 @@ const SortableColumn = forwardRef(function SortableColumn(
             </button>
           </div>
         </div>
-
+        {/* loop to generate Taskcards. see TaskCard component for the def */}
         {tasks.map((task) => (
           <TaskCard key={task.id} task={task} />
         ))}
@@ -146,6 +164,7 @@ const SortableColumn = forwardRef(function SortableColumn(
   );
 });
 
+// Component defines a column after it has been minimized
 function CollapsedColumn({ id, title, onToggleCollapse, onDeleteColumn }) {
   return (
     <motion.section
@@ -157,6 +176,7 @@ function CollapsedColumn({ id, title, onToggleCollapse, onDeleteColumn }) {
       transition={columnTransition}
     >
       <div className="collapsedColumnContent">
+        {/* Button to maximize/uncollapse col */}
         <button
           className="collapsedColumnButton"
           type="button"
@@ -165,6 +185,7 @@ function CollapsedColumn({ id, title, onToggleCollapse, onDeleteColumn }) {
           + {title}
         </button>
 
+        {/* Button to delete collapsed col */}
         <button
           className="deleteCollapsedColumnButton"
           type="button"
@@ -180,31 +201,41 @@ function CollapsedColumn({ id, title, onToggleCollapse, onDeleteColumn }) {
   );
 }
 
+// Defines the actual page, using previous components 
 function BoardPage() {
   const navigate = useNavigate();
 
+  // Tracks what the user is entering for adding a new column 
   const [newColumnTitle, setNewColumnTitle] = useState("");
+
+  // Tracks the column currently being dragged (with the ⋮⋮ handle) 
   const [activeColumnId, setActiveColumnId] = useState(null);
+
+  // Tracks the task card currently being dragged 
   const [activeTask, setActiveTask] = useState(null);
 
+  // Tracks current cols. Cols can be added or changed in order 
   const [columnOrder, setColumnOrder] = useState([
     "newTasks",
     "inProgress",
     "finished",
   ]);
 
+  // Tracks the actual Titles (Strings) of the cols from the previous structure 
   const [columnTitles, setColumnTitles] = useState({
     newTasks: "New Tasks",
     inProgress: "In Progress",
     finished: "Finished",
   });
 
+  // Tracks what cols from the previous structures are collpased (false = not collpased) 
   const [collapsedColumns, setCollapsedColumns] = useState({
     newTasks: false,
     inProgress: false,
     finished: false,
   });
 
+  // Tracks the actual tasks inside each col. Is, of course, dynamic 
   const [columns, setColumns] = useState({
     newTasks: [
       {
@@ -217,13 +248,19 @@ function BoardPage() {
     finished: [],
   });
 
+
+  // Functions for BoardPage:
+
+  // Function to delete a column
   function handleAddColumn() {
     const trimmedTitle = newColumnTitle.trim();
 
+    // New col must have a name
     if (!trimmedTitle) return;
 
     const columnId = `column-${crypto.randomUUID()}`;
 
+    // Put the new col to the end, but befpre the collpased col, if it exists
     setColumnOrder((prevOrder) => [...prevOrder, columnId]);
 
     setColumnTitles((prevTitles) => ({
@@ -244,6 +281,7 @@ function BoardPage() {
     setNewColumnTitle("");
   }
 
+  // Functions to delete a column. Associated data from arrays, like col id, are cleared here
   function handleDeleteColumn(columnId) {
     setColumnOrder((prevOrder) =>
       prevOrder.filter((currentColumnId) => currentColumnId !== columnId)
@@ -268,25 +306,7 @@ function BoardPage() {
     });
   }
 
-  function toggleColumn(columnId) {
-    setCollapsedColumns((prev) => ({
-      ...prev,
-      [columnId]: !prev[columnId],
-    }));
-  }
-
-  function findTaskById(taskId) {
-    for (const columnId in columns) {
-      const foundTask = columns[columnId].find((task) => task.id === taskId);
-
-      if (foundTask) {
-        return foundTask;
-      }
-    }
-
-    return null;
-  }
-
+  // Handles the action of picking up a draggable component. Mostly just tracks the id of the component
   function handleDragStart(event) {
     const activeId = String(event.active.id);
 
@@ -307,26 +327,29 @@ function BoardPage() {
     }
   }
 
-  function handleDragCancel() {
-    setActiveColumnId(null);
-    setActiveTask(null);
-  }
-
+  // Handles event of user dropping a component
   function handleDragEnd(event) {
+
+    // Already cleared in a helper function, just to ensure as it is not resource heavy
     setActiveColumnId(null);
     setActiveTask(null);
 
+    // If the draggable component is not over anything valid, return
+    // Note, the collision strat is, "closestCenter", which drops components on the closest valid target
     const { active, over } = event;
-
     if (!over) return;
 
     const activeId = String(active.id);
     const overId = String(over.id);
 
+    // find the id of what was dropped:
+
+    // expanded cols
     const expandedColumnIds = columnOrder.filter(
       (columnId) => !collapsedColumns[columnId]
     );
 
+    // col reordering: if the draggable was a col, reorder the col based on what it was over
     if (
       expandedColumnIds.includes(activeId) &&
       expandedColumnIds.includes(overId)
@@ -343,15 +366,20 @@ function BoardPage() {
       return;
     }
 
+    // Extra precaution, in cause the draggable is a col, but somehow got past prev 
     if (expandedColumnIds.includes(activeId)) {
       return;
     }
 
+
+    // Was the draggable a task?
     const taskId = activeId;
     const destinationColumn = overId;
 
+    // Checks for valid col to drop a task on
     if (!columns[destinationColumn]) return;
 
+    // Find the task id (where the task was from)
     let sourceColumn = null;
     let movedTask = null;
 
@@ -368,6 +396,7 @@ function BoardPage() {
     if (!sourceColumn || !movedTask) return;
     if (sourceColumn === destinationColumn) return;
 
+    // Update the tasks based on the result
     setColumns((prevColumns) => ({
       ...prevColumns,
       [sourceColumn]: prevColumns[sourceColumn].filter(
@@ -391,6 +420,38 @@ function BoardPage() {
     (column) => collapsedColumns[column.id]
   );
 
+
+  // BoardPage Helper functions
+
+  // Toggles a col between collpased and not
+  function toggleColumn(columnId) {
+    setCollapsedColumns((prev) => ({
+      ...prev,
+      [columnId]: !prev[columnId],
+    }));
+  }
+
+  // Looks for a task card through ALL cols
+  function findTaskById(taskId) {
+    for (const columnId in columns) {
+      const foundTask = columns[columnId].find((task) => task.id === taskId);
+
+      if (foundTask) {
+        return foundTask;
+      }
+    }
+
+    return null;
+  }
+
+  // removes active col id when the col is let go
+  function handleDragCancel() {
+    setActiveColumnId(null);
+    setActiveTask(null);
+  }
+
+
+  // BoardPage render;
   return (
     <motion.div
       className="pageSlide"
