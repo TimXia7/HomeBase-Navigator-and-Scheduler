@@ -249,6 +249,9 @@ function BoardPage() {
     finished: [],
   });
 
+  // Tracks pop-up messages
+  const [popupMessage, setPopupMessage] = useState("");
+
 
   // Functions for BoardPage:
 
@@ -257,10 +260,16 @@ function BoardPage() {
     const trimmedTitle = newColumnTitle.trim();
 
     // New col must have a name
-    if (!trimmedTitle) return;
+    if (!trimmedTitle) {
+      showPopup("New task column must have a name.");
+      return;
+    }
 
     // Cannot have more than MAX_COL columns
-    if (columnOrder.length >= MAX_COL) return;
+    if (columnOrder.length >= MAX_COL) {
+      showPopup("Cannot have more than 5 task columns.");
+      return;
+    }
 
     const columnId = `column-${crypto.randomUUID()}`;
 
@@ -455,6 +464,15 @@ function BoardPage() {
     setActiveTask(null);
   }
 
+  // helper to show popup messages
+  function showPopup(message) {
+    setPopupMessage(message);
+
+    setTimeout(() => {
+      setPopupMessage("");
+    }, 2500);
+  }
+
 
   // BoardPage render;
   return (
@@ -489,6 +507,11 @@ function BoardPage() {
                 <button onClick={handleAddColumn}>Add Column</button>
               </div>
             </div>
+            {popupMessage && (
+              <div className="popupMessage">
+                {popupMessage}
+              </div>
+            )}
           </header>
 
           <DndContext
