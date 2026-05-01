@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import L from "leaflet";
@@ -34,8 +34,16 @@ function AddressSearch({ onSelectLocation }) {
   const [searchMessage, setSearchMessage] = useState("");
 
   const lastSearchTimeRef = useRef(0);
+  const searchBoxRef = useRef(null);
 
   const map = useMap();
+
+  useEffect(() => {
+    if (searchBoxRef.current) {
+      L.DomEvent.disableClickPropagation(searchBoxRef.current);
+      L.DomEvent.disableScrollPropagation(searchBoxRef.current);
+    }
+  }, []);
 
   async function handleSearch(event) {
     event.preventDefault();
@@ -91,7 +99,11 @@ function AddressSearch({ onSelectLocation }) {
   }
 
   return (
-    <form className="addressSearchBox" onSubmit={handleSearch}>
+    <form
+      ref={searchBoxRef}
+      className="addressSearchBox"
+      onSubmit={handleSearch}
+    >
       <input
         type="text"
         placeholder="Search address..."
@@ -165,6 +177,36 @@ function ClickLocationMarker({ selectedLocation, onSelectLocation }) {
   return <Marker position={selectedLocation.position} icon={markerIcon} />;
 }
 
+function SelectedLocationBox({ selectedLocation }) {
+  const selectedBoxRef = useRef(null);
+
+  useEffect(() => {
+    if (selectedBoxRef.current) {
+      L.DomEvent.disableClickPropagation(selectedBoxRef.current);
+      L.DomEvent.disableScrollPropagation(selectedBoxRef.current);
+    }
+  }, []);
+
+  return (
+    <div ref={selectedBoxRef} className="selectedLocationBox">
+      <div className="selectedLocationHeader">
+        <strong>Selected Location</strong>
+
+        <button className="addTaskFromMapButton" type="button">
+          Add New Task
+        </button>
+      </div>
+
+      <p>{selectedLocation.address}</p>
+
+      <span>
+        {selectedLocation.position[0].toFixed(5)},{" "}
+        {selectedLocation.position[1].toFixed(5)}
+      </span>
+    </div>
+  );
+}
+
 function MapPage() {
   const navigate = useNavigate();
 
@@ -182,7 +224,7 @@ function MapPage() {
     >
       <div className="appShell mapNavBar">
         <aside className="mapPanel">
-          <button className="mapButton" onClick={() => navigate("/")}>
+          <button className="mapButton" onClick={() => navigate("/board")}>
             To Task Board
           </button>
         </aside>
@@ -208,22 +250,7 @@ function MapPage() {
             </MapContainer>
 
             {selectedLocation && (
-              <div className="selectedLocationBox">
-                <div className="selectedLocationHeader">
-                  <strong>Selected Location</strong>
-
-                  <button className="addTaskFromMapButton" type="button">
-                    Add New Task
-                  </button>
-                </div>
-
-                <p>{selectedLocation.address}</p>
-
-                <span>
-                  {selectedLocation.position[0].toFixed(5)},{" "}
-                  {selectedLocation.position[1].toFixed(5)}
-                </span>
-              </div>
+              <SelectedLocationBox selectedLocation={selectedLocation} />
             )}
           </div>
         </div>
