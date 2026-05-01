@@ -16,7 +16,7 @@ function MapPage() {
       <div className="appShell mapNavBar">
         <aside className="mapPanel">
           <button className="mapButton" onClick={() => navigate("/")}>
-            ← Back
+            To Task Board
           </button>
         </aside>
 
