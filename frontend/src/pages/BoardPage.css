@@ -83,6 +83,10 @@ e.g. the input for new task and new task button are in their seperate inputGroup
   cursor: pointer;
 }
 
+.inputGroup button:hover {
+  background: #374151;
+}
+
 /* Container for the individual columns */
 .board {
   flex: 1;
