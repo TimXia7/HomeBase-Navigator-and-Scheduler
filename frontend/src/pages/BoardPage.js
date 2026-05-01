@@ -406,6 +406,7 @@ function BoardPage() {
     }));
   }
 
+  // Packaging col data for the render
   const columnInfo = columnOrder.map((columnId) => ({
     id: columnId,
     title: columnTitles[columnId],
