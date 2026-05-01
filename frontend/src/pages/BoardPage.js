@@ -46,6 +46,7 @@ const stackTransition = {
   },
 };
 
+const MAX_COL = 5;
 
 // REACT COMPONENTS: 
 
@@ -257,6 +258,9 @@ function BoardPage() {
 
     // New col must have a name
     if (!trimmedTitle) return;
+
+    // Cannot have more than MAX_COL columns
+    if (columnOrder.length >= MAX_COL) return;
 
     const columnId = `column-${crypto.randomUUID()}`;
 
