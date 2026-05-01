@@ -11,8 +11,8 @@ function App() {
     <div className="routeWrapper">
       <Routes>
         <Route element={<NavBar />}>
-          <Route path="/" element={<BoardPage />} />
-          <Route path="/map" element={<MapPage />} />
+          <Route path="/" element={<MapPage />} />
+          <Route path="/board" element={<BoardPage />} />
         </Route>
       </Routes>
     </div>

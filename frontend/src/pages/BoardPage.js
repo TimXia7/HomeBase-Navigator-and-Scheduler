@@ -577,7 +577,7 @@ function BoardPage() {
         </div>
 
         <aside className="mapPanel">
-          <button className="mapButton" onClick={() => navigate("/map")}>
+          <button className="mapButton" onClick={() => navigate("/")}>
             To Map
           </button>
         </aside>
