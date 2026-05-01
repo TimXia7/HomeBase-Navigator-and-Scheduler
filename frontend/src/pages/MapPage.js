@@ -1,9 +1,14 @@
-import { useState, useRef  } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import L from "leaflet";
 
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from "react-leaflet";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  useMapEvents,
+} from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 
 import "./MapPage.css";
@@ -21,12 +26,13 @@ const markerIcon = new L.Icon({
   shadowSize: [41, 41],
 });
 
+const REQUEST_COOLDOWN_MS = 1100;
+
 function ClickLocationMarker() {
   const [selectedPosition, setSelectedPosition] = useState(null);
   const [selectedAddress, setSelectedAddress] = useState("");
 
   const lastRequestTimeRef = useRef(0);
-  const REQUEST_COOLDOWN_MS = 1100;
 
   useMapEvents({
     async click(event) {
@@ -51,8 +57,21 @@ function ClickLocationMarker() {
 
         const data = await response.json();
 
-        setSelectedAddress(data.display_name || "Address not found");
+        const road = data.address?.road || "";
+        const city = data.address?.city || "";
+        const province = data.address?.state || "";
+        const postcode = data.address?.postcode || "";
+        const country = data.address?.country || "";
+
+        const readableAddress = [road, city, province, postcode, country]
+          .filter(Boolean)
+          .join(", ");
+
+        setSelectedAddress(
+          readableAddress || data.display_name || "Address not found"
+        );
       } catch (error) {
+        console.error("Reverse geocoding failed:", error);
         setSelectedAddress("Could not load address");
       }
     },
@@ -63,17 +82,25 @@ function ClickLocationMarker() {
   }
 
   return (
-    <Marker position={selectedPosition} icon={markerIcon}>
-      <Popup>
-        <div className="selectedLocationPopup">
+    <>
+      <div className="selectedLocationBox">
+        <div className="selectedLocationHeader">
           <strong>Selected Location</strong>
-          <p>{selectedAddress}</p>
-          <span>
-            {selectedPosition[0].toFixed(5)}, {selectedPosition[1].toFixed(5)}
-          </span>
+
+          <button className="addTaskFromMapButton" type="button">
+            Add New Task
+          </button>
         </div>
-      </Popup>
-    </Marker>
+
+        <p>{selectedAddress}</p>
+
+        <span>
+          {selectedPosition[0].toFixed(5)}, {selectedPosition[1].toFixed(5)}
+        </span>
+      </div>
+
+      <Marker position={selectedPosition} icon={markerIcon}/>
+    </>
   );
 }
 
@@ -92,7 +119,7 @@ function MapPage() {
     >
       <div className="appShell mapNavBar">
         <aside className="mapPanel">
-          <button className="mapButton" onClick={() => navigate("/")}>
+          <button className="mapButton" onClick={() => navigate("/board")}>
             To Task Board
           </button>
         </aside>
