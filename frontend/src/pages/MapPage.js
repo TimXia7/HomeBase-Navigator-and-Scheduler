@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import L from "leaflet";
@@ -8,6 +8,7 @@ import {
   TileLayer,
   Marker,
   useMapEvents,
+  useMap,
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -28,10 +29,84 @@ const markerIcon = new L.Icon({
 
 const REQUEST_COOLDOWN_MS = 1100;
 
-function ClickLocationMarker() {
-  const [selectedPosition, setSelectedPosition] = useState(null);
-  const [selectedAddress, setSelectedAddress] = useState("");
+function AddressSearch({ onSelectLocation }) {
+  const [searchText, setSearchText] = useState("");
+  const [searchMessage, setSearchMessage] = useState("");
 
+  const lastSearchTimeRef = useRef(0);
+
+  const map = useMap();
+
+  async function handleSearch(event) {
+    event.preventDefault();
+
+    const currentTime = Date.now();
+
+    if (currentTime - lastSearchTimeRef.current < REQUEST_COOLDOWN_MS) {
+      setSearchMessage("Please wait before searching again.");
+      return;
+    }
+
+    const trimmedSearch = searchText.trim();
+
+    if (!trimmedSearch) {
+      setSearchMessage("Enter an address first.");
+      return;
+    }
+
+    lastSearchTimeRef.current = currentTime;
+
+    setSearchMessage("Searching...");
+
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+          trimmedSearch
+        )}&limit=1`
+      );
+
+      const data = await response.json();
+
+      if (data.length === 0) {
+        setSearchMessage("Address not found.");
+        return;
+      }
+
+      const result = data[0];
+      const lat = Number(result.lat);
+      const lng = Number(result.lon);
+
+      map.setView([lat, lng], 16);
+
+      onSelectLocation({
+        position: [lat, lng],
+        address: result.display_name,
+      });
+
+      setSearchMessage("");
+    } catch (error) {
+      console.error("Address search failed:", error);
+      setSearchMessage("Could not search address.");
+    }
+  }
+
+  return (
+    <form className="addressSearchBox" onSubmit={handleSearch}>
+      <input
+        type="text"
+        placeholder="Search address..."
+        value={searchText}
+        onChange={(event) => setSearchText(event.target.value)}
+      />
+
+      <button type="submit">Search</button>
+
+      {searchMessage && <span>{searchMessage}</span>}
+    </form>
+  );
+}
+
+function ClickLocationMarker({ selectedLocation, onSelectLocation }) {
   const lastRequestTimeRef = useRef(0);
 
   useMapEvents({
@@ -39,7 +114,6 @@ function ClickLocationMarker() {
       const currentTime = Date.now();
 
       if (currentTime - lastRequestTimeRef.current < REQUEST_COOLDOWN_MS) {
-        setSelectedAddress("Please wait before selecting another location.");
         return;
       }
 
@@ -47,8 +121,10 @@ function ClickLocationMarker() {
 
       const { lat, lng } = event.latlng;
 
-      setSelectedPosition([lat, lng]);
-      setSelectedAddress("Loading address...");
+      onSelectLocation({
+        position: [lat, lng],
+        address: "Loading address...",
+      });
 
       try {
         const response = await fetch(
@@ -67,47 +143,34 @@ function ClickLocationMarker() {
           .filter(Boolean)
           .join(", ");
 
-        setSelectedAddress(
-          readableAddress || data.display_name || "Address not found"
-        );
+        onSelectLocation({
+          position: [lat, lng],
+          address: readableAddress || data.display_name || "Address not found",
+        });
       } catch (error) {
         console.error("Reverse geocoding failed:", error);
-        setSelectedAddress("Could not load address");
+
+        onSelectLocation({
+          position: [lat, lng],
+          address: "Could not load address",
+        });
       }
     },
   });
 
-  if (!selectedPosition) {
+  if (!selectedLocation) {
     return null;
   }
 
-  return (
-    <>
-      <div className="selectedLocationBox">
-        <div className="selectedLocationHeader">
-          <strong>Selected Location</strong>
-
-          <button className="addTaskFromMapButton" type="button">
-            Add New Task
-          </button>
-        </div>
-
-        <p>{selectedAddress}</p>
-
-        <span>
-          {selectedPosition[0].toFixed(5)}, {selectedPosition[1].toFixed(5)}
-        </span>
-      </div>
-
-      <Marker position={selectedPosition} icon={markerIcon}/>
-    </>
-  );
+  return <Marker position={selectedLocation.position} icon={markerIcon} />;
 }
 
 function MapPage() {
   const navigate = useNavigate();
 
   const ottawaPosition = [45.4215, -75.6972];
+
+  const [selectedLocation, setSelectedLocation] = useState(null);
 
   return (
     <motion.div
@@ -119,7 +182,7 @@ function MapPage() {
     >
       <div className="appShell mapNavBar">
         <aside className="mapPanel">
-          <button className="mapButton" onClick={() => navigate("/board")}>
+          <button className="mapButton" onClick={() => navigate("/")}>
             To Task Board
           </button>
         </aside>
@@ -136,8 +199,32 @@ function MapPage() {
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
 
-              <ClickLocationMarker />
+              <AddressSearch onSelectLocation={setSelectedLocation} />
+
+              <ClickLocationMarker
+                selectedLocation={selectedLocation}
+                onSelectLocation={setSelectedLocation}
+              />
             </MapContainer>
+
+            {selectedLocation && (
+              <div className="selectedLocationBox">
+                <div className="selectedLocationHeader">
+                  <strong>Selected Location</strong>
+
+                  <button className="addTaskFromMapButton" type="button">
+                    Add New Task
+                  </button>
+                </div>
+
+                <p>{selectedLocation.address}</p>
+
+                <span>
+                  {selectedLocation.position[0].toFixed(5)},{" "}
+                  {selectedLocation.position[1].toFixed(5)}
+                </span>
+              </div>
+            )}
           </div>
         </div>
       </div>
