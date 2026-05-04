@@ -26,7 +26,7 @@ import {
   columnTransition,
   stackTransition,
   MAX_COL,
-} from "./boardAnimations";
+} from "../../constants/boardAnimations";
 
 import "./BoardPage.css";
 
@@ -35,99 +35,8 @@ import "./BoardPage.css";
 // Component describes an individual task
 import TaskCard from "../../components/TaskCard/TaskCard";
 
-
 // Component defines a sortable column: Main purpose is for the board columns like, New Tasks, Finished, etc.
-const SortableColumn = forwardRef(function SortableColumn({
-    id,
-    title,
-    tasks,
-    onToggleCollapse,
-    onDeleteColumn,
-    isColumnDragActive,
-  }, forwardedRef ) 
-  {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({
-    id,
-  });
-
-  const style = {
-    transform: transform ? CSS.Transform.toString(transform) : undefined,
-    transition,
-    zIndex: isDragging ? 20 : undefined,
-  };
-
-
-  // SortableColumn functions
-
-  // setRefs is used to correlate the correct column for drag and drop with the DOM 
-  function setRefs(node) {
-    setNodeRef(node);
-
-    if (typeof forwardedRef === "function") {
-      forwardedRef(node);
-    } else if (forwardedRef) {
-      forwardedRef.current = node;
-    }
-  }
-
-  // SortableColumn component
-  return (
-    <motion.section
-      layout={isColumnDragActive ? false : true}
-      ref={setRefs}
-      style={style}
-      className="column"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={columnTransition}
-    >
-      <div>
-        <div className="columnHeader">
-          <h2>{title}</h2>
-
-          <div className="columnHeaderButtons">
-            <button
-              className="columnDragHandle"
-              type="button"
-              {...attributes}
-              {...listeners}
-            >
-              ⋮⋮
-            </button>
-
-            <button
-              className="deleteColumnButton"
-              type="button"
-              onClick={() => onDeleteColumn(id)}
-            >
-              🗑️
-            </button>
-
-            <button
-              className="collapseButton"
-              type="button"
-              onClick={() => onToggleCollapse(id)}
-            >
-              −
-            </button>
-          </div>
-        </div>
-        {/* loop to generate Taskcards. see TaskCard component for the def */}
-        {tasks.map((task) => (
-          <TaskCard key={task.id} task={task} />
-        ))}
-      </div>
-    </motion.section>
-  );
-});
+import SortableColumn from "../../components/SortableColumn/SortableColumn";
 
 // Component defines a column after it has been minimized
 function CollapsedColumn({ id, title, onToggleCollapse, onDeleteColumn }) {
