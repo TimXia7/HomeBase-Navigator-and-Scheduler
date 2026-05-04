@@ -1,5 +1,5 @@
 // Basic React/DOM libraries
-import { useState, forwardRef } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
@@ -16,7 +16,6 @@ import {
   useSortable,
   arrayMove,
 } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
 
 
 /* Constants for task column animation/fade in and out 
@@ -32,6 +31,7 @@ import "./BoardPage.css";
 
 // REACT COMPONENTS: 
 
+// Re-usable components:
 // Component describes an individual task
 import TaskCard from "../../components/TaskCard/TaskCard";
 
@@ -42,7 +42,7 @@ import SortableColumn from "../../components/SortableColumn/SortableColumn";
 import CollapsedColumn from  "../../components/CollapsedColumn/CollapsedColumn";
 
 
-// Defines the actual page, using previous components 
+// BoardPage definition 
 function BoardPage() {
   const navigate = useNavigate();
 
