@@ -488,7 +488,7 @@ function BoardPage() {
           <header className="topBar">
             <div className="inputOptions">
               <div className="inputGroup">
-                <input placeholder="Add a new task..." maxlength="24" />
+                <input placeholder="Add a new task..." maxLength="24" />
                 <button>Add Task</button>
               </div>
 
@@ -502,7 +502,7 @@ function BoardPage() {
                       handleAddColumn();
                     }
                   }}
-                  maxlength="24"
+                  maxLength="24"
                 />
                 <button onClick={handleAddColumn}>Add Column</button>
               </div>
