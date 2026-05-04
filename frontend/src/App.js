@@ -2,7 +2,7 @@ import { Routes, Route } from "react-router-dom";
 
 import NavBar from "./components/NavBar";
 import BoardPage from "./pages/BoardPage/BoardPage";
-import MapPage from "./pages/MapPage";
+import MapPage from "./pages/MapPage/MapPage";
 
 import "./App.css";
 
