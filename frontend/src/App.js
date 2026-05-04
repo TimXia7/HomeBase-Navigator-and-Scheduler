@@ -1,8 +1,8 @@
 import { Routes, Route } from "react-router-dom";
 
-import NavBar from "./components/NavBar";
-import BoardPage from "./pages/BoardPage";
-import MapPage from "./pages/MapPage";
+import NavBar from "./components/NavBar/NavBar";
+import BoardPage from "./pages/BoardPage/BoardPage";
+import MapPage from "./pages/MapPage/MapPage";
 
 import "./App.css";
 
