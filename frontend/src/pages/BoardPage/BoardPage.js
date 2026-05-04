@@ -39,41 +39,8 @@ import TaskCard from "../../components/TaskCard/TaskCard";
 import SortableColumn from "../../components/SortableColumn/SortableColumn";
 
 // Component defines a column after it has been minimized
-function CollapsedColumn({ id, title, onToggleCollapse, onDeleteColumn }) {
-  return (
-    <motion.section
-      layout
-      className="column columnCollapsed"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={columnTransition}
-    >
-      <div className="collapsedColumnContent">
-        {/* Button to maximize/uncollapse col */}
-        <button
-          className="collapsedColumnButton"
-          type="button"
-          onClick={() => onToggleCollapse(id)}
-        >
-          + {title}
-        </button>
+import CollapsedColumn from  "../../components/CollapsedColumn/CollapsedColumn";
 
-        {/* Button to delete collapsed col */}
-        <button
-          className="deleteCollapsedColumnButton"
-          type="button"
-          onClick={(event) => {
-            event.stopPropagation();
-            onDeleteColumn(id);
-          }}
-        >
-          🗑
-        </button>
-      </div>
-    </motion.section>
-  );
-}
 
 // Defines the actual page, using previous components 
 function BoardPage() {
