@@ -24,29 +24,11 @@ import "./BoardPage.css";
 /* Constants for task column animation/fade in and out 
 columnTransition = for columns minimized and maximized
 stackTransition = for the column of minimized task columns */
-const columnTransition = {
-  layout: {
-    duration: 0.2,
-    ease: "easeInOut",
-  },
-  opacity: {
-    duration: 0.2,
-    ease: "easeInOut",
-  },
-};
-
-const stackTransition = {
-  layout: {
-    duration: 0.2,
-    ease: "easeInOut",
-  },
-  opacity: {
-    duration: 0.2,
-    ease: "easeInOut",
-  },
-};
-
-const MAX_COL = 5;
+import {
+  columnTransition,
+  stackTransition,
+  MAX_COL,
+} from "./boardAnimations";
 
 // REACT COMPONENTS: 
 
