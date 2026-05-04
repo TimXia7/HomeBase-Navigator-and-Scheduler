@@ -29,7 +29,7 @@ import {
 
 import "./BoardPage.css";
 
-// REACT COMPONENTS: 
+// COMPONENTS: 
 
 // Re-usable components:
 // Component describes an individual task
