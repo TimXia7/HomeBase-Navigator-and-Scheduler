@@ -33,7 +33,7 @@ import "./BoardPage.css";
 // REACT COMPONENTS: 
 
 // Component describes an individual task
-import TaskCard from "../../components/TaskCard";
+import TaskCard from "../../components/TaskCard/TaskCard";
 
 
 // Component defines a sortable column: Main purpose is for the board columns like, New Tasks, Finished, etc.
