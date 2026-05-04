@@ -18,8 +18,6 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-// Associated css page 
-import "./BoardPage.css";
 
 /* Constants for task column animation/fade in and out 
 columnTransition = for columns minimized and maximized
@@ -30,29 +28,13 @@ import {
   MAX_COL,
 } from "./boardAnimations";
 
+import "./BoardPage.css";
+
 // REACT COMPONENTS: 
 
 // Component describes an individual task
-function TaskCard({ task }) {
-  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
-    id: task.id,
-  });
+import TaskCard from "../../components/TaskCard";
 
-  return (
-    <div
-      ref={setNodeRef}
-      className={`taskCard ${isDragging ? "taskCardDragging" : ""}`}
-
-      /* Below is not absolutely required, but it helps ensure that the draggable task remains draggable
-      Basically, I am ensuring the button contains all drag an drop attributes */
-      {...listeners}
-      {...attributes}
-    >
-      <p>{task.title}</p>
-      <span>{task.location}</span>
-    </div>
-  );
-}
 
 // Component defines a sortable column: Main purpose is for the board columns like, New Tasks, Finished, etc.
 const SortableColumn = forwardRef(function SortableColumn({
