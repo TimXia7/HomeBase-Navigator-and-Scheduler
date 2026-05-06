@@ -1,99 +1,42 @@
-import { forwardRef } from "react";
 import { motion } from "framer-motion";
 
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
-
-import TaskCard from "../TaskCard/TaskCard";
 import { columnTransition } from "../../constants/boardAnimations";
 
-const SortableColumn = forwardRef(function SortableColumn(
-  {
-    id,
-    title,
-    tasks,
-    onToggleCollapse,
-    onDeleteColumn,
-    isColumnDragActive,
-  },
-  forwardedRef
-) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({
-    id,
-  });
-
-  const style = {
-    transform: transform ? CSS.Transform.toString(transform) : undefined,
-    transition,
-    zIndex: isDragging ? 20 : undefined,
-  };
-
-  function setRefs(node) {
-    setNodeRef(node);
-
-    if (typeof forwardedRef === "function") {
-      forwardedRef(node);
-    } else if (forwardedRef) {
-      forwardedRef.current = node;
-    }
-  }
-
+function CollapsedColumn({ id, title, onToggleCollapse, onDeleteColumn }) {
   return (
+    // Render the minimized version of a task column
     <motion.section
-      layout={isColumnDragActive ? false : true}
-      ref={setRefs}
-      style={style}
-      className="column"
+      layout
+      className="column columnCollapsed"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={columnTransition}
     >
-      <div>
-        <div className="columnHeader">
-          <h2>{title}</h2>
+      <div className="collapsedColumnContent">
+        {/* Restore the collapsed column when clicked */}
+        <button
+          className="collapsedColumnButton"
+          type="button"
+          onClick={() => onToggleCollapse(id)}
+        >
+          + {title}
+        </button>
 
-          <div className="columnHeaderButtons">
-            <button
-              className="columnDragHandle"
-              type="button"
-              {...attributes}
-              {...listeners}
-            >
-              ⋮⋮
-            </button>
-
-            <button
-              className="deleteColumnButton"
-              type="button"
-              onClick={() => onDeleteColumn(id)}
-            >
-              🗑️
-            </button>
-
-            <button
-              className="collapseButton"
-              type="button"
-              onClick={() => onToggleCollapse(id)}
-            >
-              −
-            </button>
-          </div>
-        </div>
-
-        {tasks.map((task) => (
-          <TaskCard key={task.id} task={task} />
-        ))}
+        {/* Delete the column without also triggering the restore button */}
+        <button
+          className="deleteCollapsedColumnButton"
+          type="button"
+          onClick={(event) => {
+            event.stopPropagation();
+            onDeleteColumn(id);
+          }}
+        >
+          🗑
+        </button>
       </div>
     </motion.section>
   );
-});
+}
 
-export default SortableColumn;
+export default CollapsedColumn;
