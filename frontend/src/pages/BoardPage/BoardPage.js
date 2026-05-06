@@ -1,5 +1,5 @@
 // Basic React/DOM libraries
-import { useState, forwardRef } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
@@ -16,192 +16,33 @@ import {
   useSortable,
   arrayMove,
 } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
 
-// Associated css page 
-import "./BoardPage.css";
 
 /* Constants for task column animation/fade in and out 
 columnTransition = for columns minimized and maximized
 stackTransition = for the column of minimized task columns */
-const columnTransition = {
-  layout: {
-    duration: 0.2,
-    ease: "easeInOut",
-  },
-  opacity: {
-    duration: 0.2,
-    ease: "easeInOut",
-  },
-};
+import {
+  columnTransition,
+  stackTransition,
+  MAX_COL,
+} from "../../constants/boardAnimations";
 
-const stackTransition = {
-  layout: {
-    duration: 0.2,
-    ease: "easeInOut",
-  },
-  opacity: {
-    duration: 0.2,
-    ease: "easeInOut",
-  },
-};
+import "./BoardPage.css";
 
+// COMPONENTS: 
 
-// REACT COMPONENTS: 
-
+// Re-usable components:
 // Component describes an individual task
-function TaskCard({ task }) {
-  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
-    id: task.id,
-  });
-
-  return (
-    <div
-      ref={setNodeRef}
-      className={`taskCard ${isDragging ? "taskCardDragging" : ""}`}
-
-      /* Below is not absolutely required, but it helps ensure that the draggable task remains draggable
-      Basically, I am ensuring the button contains all drag an drop attributes */
-      {...listeners}
-      {...attributes}
-    >
-      <p>{task.title}</p>
-      <span>{task.location}</span>
-    </div>
-  );
-}
+import TaskCard from "../../components/TaskCard/TaskCard";
 
 // Component defines a sortable column: Main purpose is for the board columns like, New Tasks, Finished, etc.
-const SortableColumn = forwardRef(function SortableColumn({
-    id,
-    title,
-    tasks,
-    onToggleCollapse,
-    onDeleteColumn,
-    isColumnDragActive,
-  }, forwardedRef ) 
-  {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({
-    id,
-  });
-
-  const style = {
-    transform: transform ? CSS.Transform.toString(transform) : undefined,
-    transition,
-    zIndex: isDragging ? 20 : undefined,
-  };
-
-
-  // SortableColumn functions
-
-  // setRefs is used to correlate the correct column for drag and drop with the DOM 
-  function setRefs(node) {
-    setNodeRef(node);
-
-    if (typeof forwardedRef === "function") {
-      forwardedRef(node);
-    } else if (forwardedRef) {
-      forwardedRef.current = node;
-    }
-  }
-
-  // SortableColumn component
-  return (
-    <motion.section
-      layout={isColumnDragActive ? false : true}
-      ref={setRefs}
-      style={style}
-      className="column"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={columnTransition}
-    >
-      <div>
-        <div className="columnHeader">
-          <h2>{title}</h2>
-
-          <div className="columnHeaderButtons">
-            <button
-              className="columnDragHandle"
-              type="button"
-              {...attributes}
-              {...listeners}
-            >
-              ⋮⋮
-            </button>
-
-            <button
-              className="deleteColumnButton"
-              type="button"
-              onClick={() => onDeleteColumn(id)}
-            >
-              🗑️
-            </button>
-
-            <button
-              className="collapseButton"
-              type="button"
-              onClick={() => onToggleCollapse(id)}
-            >
-              −
-            </button>
-          </div>
-        </div>
-        {/* loop to generate Taskcards. see TaskCard component for the def */}
-        {tasks.map((task) => (
-          <TaskCard key={task.id} task={task} />
-        ))}
-      </div>
-    </motion.section>
-  );
-});
+import SortableColumn from "../../components/SortableColumn/SortableColumn";
 
 // Component defines a column after it has been minimized
-function CollapsedColumn({ id, title, onToggleCollapse, onDeleteColumn }) {
-  return (
-    <motion.section
-      layout
-      className="column columnCollapsed"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={columnTransition}
-    >
-      <div className="collapsedColumnContent">
-        {/* Button to maximize/uncollapse col */}
-        <button
-          className="collapsedColumnButton"
-          type="button"
-          onClick={() => onToggleCollapse(id)}
-        >
-          + {title}
-        </button>
+import CollapsedColumn from  "../../components/CollapsedColumn/CollapsedColumn";
 
-        {/* Button to delete collapsed col */}
-        <button
-          className="deleteCollapsedColumnButton"
-          type="button"
-          onClick={(event) => {
-            event.stopPropagation();
-            onDeleteColumn(id);
-          }}
-        >
-          🗑
-        </button>
-      </div>
-    </motion.section>
-  );
-}
 
-// Defines the actual page, using previous components 
+// BoardPage definition 
 function BoardPage() {
   const navigate = useNavigate();
 
@@ -248,6 +89,9 @@ function BoardPage() {
     finished: [],
   });
 
+  // Tracks pop-up messages
+  const [popupMessage, setPopupMessage] = useState("");
+
 
   // Functions for BoardPage:
 
@@ -256,7 +100,16 @@ function BoardPage() {
     const trimmedTitle = newColumnTitle.trim();
 
     // New col must have a name
-    if (!trimmedTitle) return;
+    if (!trimmedTitle) {
+      showPopup("New task column must have a name.");
+      return;
+    }
+
+    // Cannot have more than MAX_COL columns
+    if (columnOrder.length >= MAX_COL) {
+      showPopup("Cannot have more than 5 task columns.");
+      return;
+    }
 
     const columnId = `column-${crypto.randomUUID()}`;
 
@@ -451,6 +304,15 @@ function BoardPage() {
     setActiveTask(null);
   }
 
+  // helper to show popup messages
+  function showPopup(message) {
+    setPopupMessage(message);
+
+    setTimeout(() => {
+      setPopupMessage("");
+    }, 2500);
+  }
+
 
   // BoardPage render;
   return (
@@ -466,7 +328,7 @@ function BoardPage() {
           <header className="topBar">
             <div className="inputOptions">
               <div className="inputGroup">
-                <input placeholder="Add a new task..." maxlength="24" />
+                <input placeholder="Add a new task..." maxLength="24" />
                 <button>Add Task</button>
               </div>
 
@@ -480,11 +342,16 @@ function BoardPage() {
                       handleAddColumn();
                     }
                   }}
-                  maxlength="24"
+                  maxLength="24"
                 />
                 <button onClick={handleAddColumn}>Add Column</button>
               </div>
             </div>
+            {popupMessage && (
+              <div className="popupMessage">
+                {popupMessage}
+              </div>
+            )}
           </header>
 
           <DndContext
@@ -550,7 +417,7 @@ function BoardPage() {
         </div>
 
         <aside className="mapPanel">
-          <button className="mapButton" onClick={() => navigate("/map")}>
+          <button className="mapButton" onClick={() => navigate("/")}>
             To Map
           </button>
         </aside>
