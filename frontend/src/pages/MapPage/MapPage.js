@@ -30,9 +30,12 @@ import ClickLocationMarker from "../../components/ClickLocationMarker/ClickLocat
 
 import SelectedLocationBox from "../../components/SelectedLocationBox/SelectedLocationBox.js";
 
+
+// MapPage definition 
 function MapPage() {
   const navigate = useNavigate();
 
+  // Store user's current selected location on interactive map
   const [selectedLocation, setSelectedLocation] = useState(null);
 
   return (
@@ -43,6 +46,7 @@ function MapPage() {
       exit={{ x: "100vw" }}
       transition={{ duration: 0.45, ease: "easeInOut" }}
     >
+      {/* Navigate to BoardPage */} 
       <div className="appShell mapNavBar">
         <aside className="mapPanel">
           <button className="mapButton" onClick={() => navigate("/board")}>
@@ -50,13 +54,17 @@ function MapPage() {
           </button>
         </aside>
 
+        {/* Interactive map: */} 
         <div className="mapContainer">
           <div className="mapView">
+            
+            {/* Default starting location on map: */} 
             <MapContainer
               center={ottawaPosition}
               zoom={13}
               className="leafletMap"
             >
+              {/* Map tiles generated using OSM info, with help from leaflet: */} 
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
