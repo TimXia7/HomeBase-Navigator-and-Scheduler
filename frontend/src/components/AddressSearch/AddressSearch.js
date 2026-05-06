@@ -6,14 +6,23 @@ import {useMap} from "react-leaflet";
 import { REQUEST_COOLDOWN_MS } from "../../constants/mapConstants";
 
 function AddressSearch({ onSelectLocation }) {
+
+  // Holds user's search string for address
   const [searchText, setSearchText] = useState("");
+
+  // Holds feedback for user's search string
   const [searchMessage, setSearchMessage] = useState("");
 
+  // Timer to delay searches due to limited API calls
   const lastSearchTimeRef = useRef(0);
+
+  // Holds the location the user clicked for 
   const searchBoxRef = useRef(null);
 
+  // Stores a reference to the search form DOM element
   const map = useMap();
 
+  // Disable search clicks on the address search box
   useEffect(() => {
     if (searchBoxRef.current) {
       L.DomEvent.disableClickPropagation(searchBoxRef.current);
@@ -22,6 +31,8 @@ function AddressSearch({ onSelectLocation }) {
   }, []);
 
   async function handleSearch(event) {
+    
+    // Preliminary checks before search attempt
     event.preventDefault();
 
     const currentTime = Date.now();
@@ -42,7 +53,9 @@ function AddressSearch({ onSelectLocation }) {
 
     setSearchMessage("Searching...");
 
+    // Process address search
     try {
+      // fetch info from OSM API, specifically Nominatim geocoding that actually gives the address
       const response = await fetch(
         `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
           trimmedSearch
@@ -56,6 +69,7 @@ function AddressSearch({ onSelectLocation }) {
         return;
       }
 
+      // store coords to address
       const result = data[0];
       const lat = Number(result.lat);
       const lng = Number(result.lon);
@@ -74,6 +88,7 @@ function AddressSearch({ onSelectLocation }) {
     }
   }
 
+  // Render the address search form and optional search feedback message
   return (
     <form
       ref={searchBoxRef}
