@@ -4,6 +4,7 @@ import L from "leaflet";
 function SelectedLocationBox({ selectedLocation }) {
   const selectedBoxRef = useRef(null);
 
+  // disable map interactions through the box
   useEffect(() => {
     if (selectedBoxRef.current) {
       L.DomEvent.disableClickPropagation(selectedBoxRef.current);
@@ -11,6 +12,7 @@ function SelectedLocationBox({ selectedLocation }) {
     }
   }, []);
 
+  // Show selected address and option to create a task there, presumably from a map
   return (
     <div ref={selectedBoxRef} className="selectedLocationBox">
       <div className="selectedLocationHeader">
