@@ -8,7 +8,7 @@ import TaskCard from "../TaskCard/TaskCard";
 import { columnTransition } from "../../constants/boardAnimations";
 
 const SortableColumn = forwardRef(function SortableColumn(
-  {
+  { // destructured props 
     id,
     title,
     tasks,
@@ -17,7 +17,7 @@ const SortableColumn = forwardRef(function SortableColumn(
     isColumnDragActive,
   },
   forwardedRef
-) {
+) { // Sortable drag-and-drop helpers from dnd-kit
   const {
     attributes,
     listeners,
@@ -29,15 +29,19 @@ const SortableColumn = forwardRef(function SortableColumn(
     id,
   });
 
+  // dnd styling  
   const style = {
     transform: transform ? CSS.Transform.toString(transform) : undefined,
     transition,
     zIndex: isDragging ? 20 : undefined,
   };
 
+  // Set refs for dnd
   function setRefs(node) {
+    // save the actual ref of the column for the dnd kit
     setNodeRef(node);
 
+    // pass the ref to parent as well
     if (typeof forwardedRef === "function") {
       forwardedRef(node);
     } else if (forwardedRef) {
@@ -60,6 +64,7 @@ const SortableColumn = forwardRef(function SortableColumn(
         <div className="columnHeader">
           <h2>{title}</h2>
 
+          {/* Button pannel for columns */}
           <div className="columnHeaderButtons">
             <button
               className="columnDragHandle"
