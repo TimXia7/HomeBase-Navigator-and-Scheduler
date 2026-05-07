@@ -43,7 +43,7 @@ The goal of the project is to help users organize tasks not only by priority or 
 ### Start the Spring Boot Backend
 
 ```bash
-cd backend/scheduler
+cd backend/homebase
 mvn spring-boot:run
 ```
 
