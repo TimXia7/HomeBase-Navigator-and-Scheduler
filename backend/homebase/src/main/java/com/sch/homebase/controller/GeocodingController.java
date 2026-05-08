@@ -25,7 +25,7 @@ public class GeocodingController {
     @GetMapping("/search")
     public ResponseEntity<?> searchAddress(@RequestParam String query) {
         if (!canMakeRequest()) {
-            System.err.println("ERR FROM /search: too many requests");
+            System.err.println("DEBUG: ERR FROM /search: too many requests");
             return ResponseEntity
                     .status(HttpStatus.TOO_MANY_REQUESTS)
                     .body("Too many requests. Please wait before trying again.");
@@ -41,7 +41,7 @@ public class GeocodingController {
             @RequestParam double lng
     ) {
         if (!canMakeRequest()) {
-            System.err.println("ERR FROM /reverse: too many requests");
+            System.err.println("DEBUG: ERR FROM /reverse: too many requests");
             return ResponseEntity
                     .status(HttpStatus.TOO_MANY_REQUESTS)
                     .body("Too many requests. Please wait before trying again.");
