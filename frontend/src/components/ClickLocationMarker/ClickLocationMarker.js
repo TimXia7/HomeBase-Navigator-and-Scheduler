@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { Marker, useMapEvents } from "react-leaflet";
 
-import { markerIcon, REQUEST_COOLDOWN_MS } from "../../constants/mapConstants";
+import { markerIcon } from "../../constants/mapConstants";
 
 function ClickLocationMarker({ selectedLocation, onSelectLocation }) {
 
