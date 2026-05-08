@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/geocode")
+@CrossOrigin(origins = "http://localhost:3000")
 public class GeocodingController {
 
     private final GeocodingService geocodingService;
