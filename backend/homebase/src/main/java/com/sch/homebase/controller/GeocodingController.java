@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(origins = "http://localhost:3000")
 public class GeocodingController {
 
-    private static final long REQUEST_COOLDOWN_MS = 1000;
+    private static final long REQUEST_COOLDOWN_MS = 1500;
 
     private final GeocodingService geocodingService;
 
@@ -25,6 +25,7 @@ public class GeocodingController {
     @GetMapping("/search")
     public ResponseEntity<?> searchAddress(@RequestParam String query) {
         if (!canMakeRequest()) {
+            System.err.println("ERR FROM /search: too many requests");
             return ResponseEntity
                     .status(HttpStatus.TOO_MANY_REQUESTS)
                     .body("Too many requests. Please wait before trying again.");
@@ -40,6 +41,7 @@ public class GeocodingController {
             @RequestParam double lng
     ) {
         if (!canMakeRequest()) {
+            System.err.println("ERR FROM /reverse: too many requests");
             return ResponseEntity
                     .status(HttpStatus.TOO_MANY_REQUESTS)
                     .body("Too many requests. Please wait before trying again.");
