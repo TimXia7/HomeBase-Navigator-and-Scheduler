@@ -31,8 +31,6 @@ function AddressSearch({ onSelectLocation }) {
   }, []);
 
   async function handleSearch(event) {
-    
-    // Preliminary checks before search attempt
     event.preventDefault();
 
     const currentTime = Date.now();
@@ -53,32 +51,28 @@ function AddressSearch({ onSelectLocation }) {
 
     setSearchMessage("Searching...");
 
-    // Process address search
     try {
-      // fetch info from OSM API, specifically Nominatim geocoding that actually gives the address
       const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+        `http://localhost:8081/api/geocode/search?query=${encodeURIComponent(
           trimmedSearch
-        )}&limit=1`
+        )}`
       );
 
-      const data = await response.json();
-
-      if (data.length === 0) {
+      if (!response.ok) {
         setSearchMessage("Address not found.");
         return;
       }
 
-      // store coords to address
-      const result = data[0];
-      const lat = Number(result.lat);
-      const lng = Number(result.lon);
+      const data = await response.json();
+
+      const lat = Number(data.lat);
+      const lng = Number(data.lng);
 
       map.setView([lat, lng], 16);
 
       onSelectLocation({
         position: [lat, lng],
-        address: result.display_name,
+        address: data.address,
       });
 
       setSearchMessage("");
