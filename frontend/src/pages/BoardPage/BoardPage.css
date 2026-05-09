@@ -110,6 +110,7 @@ e.g. the input for new task and new task button are in their seperate inputGroup
   position: relative;
 }
 
+/* controlls the actual css for the tasks stacked in the col*/
 .taskList {
   display: flex;
   flex-direction: column;
