@@ -110,6 +110,12 @@ e.g. the input for new task and new task button are in their seperate inputGroup
   position: relative;
 }
 
+.taskList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
 .column h2 {
   margin: 0 0 14px;
   font-size: 16px;

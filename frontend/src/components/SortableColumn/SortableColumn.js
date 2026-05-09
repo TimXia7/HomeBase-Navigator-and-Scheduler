@@ -93,9 +93,11 @@ const SortableColumn = forwardRef(function SortableColumn(
           </div>
         </div>
 
-        {tasks.map((task) => (
-          <TaskCard key={task.id} task={task} />
-        ))}
+        <div className="taskList">
+          {tasks.map((task) => (
+            <TaskCard key={task.id} task={task} />
+          ))}
+        </div>
       </div>
     </motion.section>
   );
