@@ -55,6 +55,10 @@ function BoardPage() {
   // Tracks the task card currently being dragged 
   const [activeTask, setActiveTask] = useState(null);
 
+  // Tracks new task card being created
+  const [newTaskTitle, setNewTaskTitle] = useState("");
+
+
   // Tracks current cols. Cols can be added or changed in order 
   const [columnOrder, setColumnOrder] = useState([
     "newTasks",
@@ -94,6 +98,29 @@ function BoardPage() {
 
 
   // Functions for BoardPage:
+
+  // Function to add a task to the New Tasks column
+  function handleAddTask() {
+    const trimmedTitle = newTaskTitle.trim();
+
+    if (!trimmedTitle) {
+      showPopup("New task must have a name.");
+      return;
+    }
+
+    const newTask = {
+      id: `task-${crypto.randomUUID()}`,
+      title: trimmedTitle,
+      location: "No location yet",
+    };
+
+    setColumns((prevColumns) => ({
+      ...prevColumns,
+      newTasks: [...prevColumns.newTasks, newTask],
+    }));
+
+    setNewTaskTitle("");
+  }
 
   // Function to delete a column
   function handleAddColumn() {
@@ -328,8 +355,21 @@ function BoardPage() {
           <header className="topBar">
             <div className="inputOptions">
               <div className="inputGroup">
-                <input placeholder="Add a new task..." maxLength="24" />
-                <button>Add Task</button>
+                <input
+                  placeholder="Add a new task..."
+                  value={newTaskTitle}
+                  onChange={(event) => setNewTaskTitle(event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      handleAddTask();
+                    }
+                  }}
+                  maxLength="24"
+                />
+
+                <button type="button" onClick={handleAddTask}>
+                  Add Task
+                </button>
               </div>
 
               <div className="inputGroup">
