@@ -20,7 +20,7 @@ function TaskCard({ task }) {
       {...attributes}
     >
       <p>{task.title}</p>
-      <span>{task.location}</span>
+      <span>{task.location || "No location yet"}</span>
     </div>
   );
 }
