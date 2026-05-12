@@ -43,7 +43,16 @@ import CollapsedColumn from  "../../components/CollapsedColumn/CollapsedColumn";
 
 
 // BoardPage definition 
-function BoardPage() {
+function BoardPage({
+  columnOrder,
+  setColumnOrder,
+  columnTitles,
+  setColumnTitles,
+  collapsedColumns,
+  setCollapsedColumns,
+  columns,
+  setColumns,
+}) {
   const navigate = useNavigate();
 
   // Tracks what the user is entering for adding a new column 
@@ -57,41 +66,6 @@ function BoardPage() {
 
   // Tracks new task card being created
   const [newTaskTitle, setNewTaskTitle] = useState("");
-
-
-  // Tracks current cols. Cols can be added or changed in order 
-  const [columnOrder, setColumnOrder] = useState([
-    "newTasks",
-    "inProgress",
-    "finished",
-  ]);
-
-  // Tracks the actual Titles (Strings) of the cols from the previous structure 
-  const [columnTitles, setColumnTitles] = useState({
-    newTasks: "New Tasks",
-    inProgress: "In Progress",
-    finished: "Finished",
-  });
-
-  // Tracks what cols from the previous structures are collpased (false = not collpased) 
-  const [collapsedColumns, setCollapsedColumns] = useState({
-    newTasks: false,
-    inProgress: false,
-    finished: false,
-  });
-
-  // Tracks the actual tasks inside each col. Is, of course, dynamic 
-  const [columns, setColumns] = useState({
-    newTasks: [
-      {
-        id: "task-1",
-        title: "Example task",
-        location: "No location yet",
-      },
-    ],
-    inProgress: [],
-    finished: [],
-  });
 
   // Tracks pop-up messages
   const [popupMessage, setPopupMessage] = useState("");
@@ -449,7 +423,7 @@ function BoardPage() {
               {activeTask ? (
                 <div className="taskCard taskCardOverlay">
                   <p>{activeTask.title}</p>
-                  <span>{activeTask.location}</span>
+                  <span>{activeTask.location || "No location yet"}</span>
                 </div>
               ) : null}
             </DragOverlay>
