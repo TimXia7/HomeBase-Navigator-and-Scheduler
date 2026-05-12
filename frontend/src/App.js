@@ -89,7 +89,15 @@ function App() {
     <div className="routeWrapper">
       <Routes>
         <Route element={<NavBar />}>
-          <Route path="/" element={<MapPage />} />
+          <Route
+            path="/"
+            element={
+              <MapPage
+                columns={columns}
+                columnTitles={columnTitles}
+              />
+            }
+          />
 
           <Route
             path="/board"

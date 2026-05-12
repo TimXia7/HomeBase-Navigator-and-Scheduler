@@ -32,7 +32,7 @@ import SelectedLocationBox from "../../components/SelectedLocationBox/SelectedLo
 
 
 // MapPage definition 
-function MapPage() {
+function MapPage({ columns, columnTitles }) {
   const navigate = useNavigate();
 
   // Store user's current selected location on interactive map
