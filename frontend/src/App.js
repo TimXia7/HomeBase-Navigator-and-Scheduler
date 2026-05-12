@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Routes, Route } from "react-router-dom";
 
 import NavBar from "./components/NavBar/NavBar";
@@ -7,30 +7,24 @@ import MapPage from "./pages/MapPage/MapPage";
 
 import "./App.css";
 
-function App() {
-  // Tracks current columns. Columns can be added or reordered.
-  const [columnOrder, setColumnOrder] = useState([
-    "newTasks",
-    "inProgress",
-    "finished",
-  ]);
+const BOARD_STORAGE_KEY = "homebase-board-state";
 
-  // Tracks the display title for each column.
-  const [columnTitles, setColumnTitles] = useState({
+const DEFAULT_BOARD_STATE = {
+  columnOrder: ["newTasks", "inProgress", "finished"],
+
+  columnTitles: {
     newTasks: "New Tasks",
     inProgress: "In Progress",
     finished: "Finished",
-  });
+  },
 
-  // Tracks which columns are collapsed.
-  const [collapsedColumns, setCollapsedColumns] = useState({
+  collapsedColumns: {
     newTasks: false,
     inProgress: false,
     finished: false,
-  });
+  },
 
-  // Tracks the tasks inside each column.
-  const [columns, setColumns] = useState({
+  columns: {
     newTasks: [
       {
         id: "task-1",
@@ -40,7 +34,56 @@ function App() {
     ],
     inProgress: [],
     finished: [],
-  });
+  },
+};
+
+function getSavedBoardState() {
+  const savedState = localStorage.getItem(BOARD_STORAGE_KEY);
+
+  if (!savedState) {
+    return DEFAULT_BOARD_STATE;
+  }
+
+  try {
+    return JSON.parse(savedState);
+  } catch (error) {
+    console.error("Failed to load board state from localStorage:", error);
+    return DEFAULT_BOARD_STATE;
+  }
+}
+
+function App() {
+  const savedBoardState = getSavedBoardState();
+
+  // Tracks current columns. Columns can be added or reordered.
+  const [columnOrder, setColumnOrder] = useState(
+    savedBoardState.columnOrder
+  );
+
+  // Tracks the display title for each column.
+  const [columnTitles, setColumnTitles] = useState(
+    savedBoardState.columnTitles
+  );
+
+  // Tracks which columns are collapsed.
+  const [collapsedColumns, setCollapsedColumns] = useState(
+    savedBoardState.collapsedColumns
+  );
+
+  // Tracks the tasks inside each column.
+  const [columns, setColumns] = useState(savedBoardState.columns);
+
+  // Save board data whenever it changes.
+  useEffect(() => {
+    const boardState = {
+      columnOrder,
+      columnTitles,
+      collapsedColumns,
+      columns,
+    };
+
+    localStorage.setItem(BOARD_STORAGE_KEY, JSON.stringify(boardState));
+  }, [columnOrder, columnTitles, collapsedColumns, columns]);
 
   return (
     <div className="routeWrapper">
