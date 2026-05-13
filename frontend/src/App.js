@@ -7,8 +7,10 @@ import MapPage from "./pages/MapPage/MapPage";
 
 import "./App.css";
 
+// LocalStorage browser key name 
 const BOARD_STORAGE_KEY = "homebase-board-state";
 
+// "Starting" board state. Also defines the structure of board data in storage
 const DEFAULT_BOARD_STATE = {
   columnOrder: ["newTasks", "inProgress", "finished"],
 
@@ -37,9 +39,11 @@ const DEFAULT_BOARD_STATE = {
   },
 };
 
+// getSavedBoardStateL retrieves board state using local storage using the structure of DEFAULT_BOARD_STATE
 function getSavedBoardState() {
   const savedState = localStorage.getItem(BOARD_STORAGE_KEY);
 
+  // If there is no saved state found, return the default state
   if (!savedState) {
     return DEFAULT_BOARD_STATE;
   }
