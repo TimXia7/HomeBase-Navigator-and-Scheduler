@@ -7,8 +7,10 @@ import MapPage from "./pages/MapPage/MapPage";
 
 import "./App.css";
 
+// LocalStorage browser key name 
 const BOARD_STORAGE_KEY = "homebase-board-state";
 
+// "Starting" board state. Also defines the structure of board data in storage
 const DEFAULT_BOARD_STATE = {
   columnOrder: ["newTasks", "inProgress", "finished"],
 
