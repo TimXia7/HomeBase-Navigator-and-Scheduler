@@ -361,6 +361,11 @@ e.g. the input for new task and new task button are in their seperate inputGroup
   background: #fee2e2;
 }
 
+.taskCardDeleting {
+  opacity: 0;
+  transition: opacity 0.18s ease-in-out;
+}
+
 /* Mostly used for input feedback*/ 
 .popupMessage {
   position: absolute;
