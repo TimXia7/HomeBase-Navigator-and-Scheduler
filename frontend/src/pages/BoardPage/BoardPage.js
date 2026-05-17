@@ -404,6 +404,7 @@ function BoardPage({
                         tasks={column.tasks}
                         onToggleCollapse={toggleColumn}
                         onDeleteColumn={handleDeleteColumn}
+                        onDeleteTask={handleDeleteTask}
                         isColumnDragActive={activeColumnId !== null}
                       />
                     ))}

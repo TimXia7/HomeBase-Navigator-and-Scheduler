@@ -1,7 +1,6 @@
 import { useDraggable } from "@dnd-kit/core";
 
-function TaskCard({ task }) {
-
+function TaskCard({ task, onDeleteTask }) {
   // Make this task card draggable using its unique task id
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: task.id,
@@ -19,7 +18,22 @@ function TaskCard({ task }) {
       {...listeners}
       {...attributes}
     >
-      <p>{task.title}</p>
+      <div className="taskCardHeader">
+        <p>{task.title}</p>
+
+        <button
+          className="deleteTaskButton"
+          type="button"
+          onPointerDown={(event) => event.stopPropagation()}
+          onClick={(event) => {
+            event.stopPropagation();
+            onDeleteTask(task.id);
+          }}
+        >
+          ×
+        </button>
+      </div>
+
       <span>{task.location || "No location yet"}</span>
     </div>
   );

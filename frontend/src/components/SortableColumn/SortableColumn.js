@@ -15,6 +15,7 @@ const SortableColumn = forwardRef(function SortableColumn(
     tasks,
     onToggleCollapse,
     onDeleteColumn,
+    onDeleteTask,
     isColumnDragActive,
   },
   forwardedRef
@@ -97,7 +98,11 @@ const SortableColumn = forwardRef(function SortableColumn(
 
         <div className="taskList">
           {tasks.map((task) => (
-            <TaskCard key={task.id} task={task} />
+            <TaskCard
+              key={task.id}
+              task={task}
+              onDeleteTask={onDeleteTask}
+            />
           ))}
         </div>
       </div>
