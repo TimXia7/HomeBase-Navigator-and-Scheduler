@@ -96,6 +96,21 @@ function BoardPage({
     setNewTaskTitle("");
   }
 
+  // Function to delete a task from whichever column currently contains it
+  function handleDeleteTask(taskId) {
+    setColumns((prevColumns) => {
+      const updatedColumns = {};
+
+      for (const columnId in prevColumns) {
+        updatedColumns[columnId] = prevColumns[columnId].filter(
+          (task) => task.id !== taskId
+        );
+      }
+
+      return updatedColumns;
+    });
+  }
+
   // Function to delete a column
   function handleAddColumn() {
     const trimmedTitle = newColumnTitle.trim();
