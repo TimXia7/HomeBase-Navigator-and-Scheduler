@@ -332,6 +332,40 @@ e.g. the input for new task and new task button are in their seperate inputGroup
   z-index: 9999;
 }
 
+.taskCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.taskCardHeader p {
+  margin: 0 0 8px;
+  font-weight: 600;
+}
+
+.deleteTaskButton {
+  border: none;
+  background: transparent;
+  color: #6b7280;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 6px;
+}
+
+.deleteTaskButton:hover {
+  color: #dc2626;
+  background: #fee2e2;
+}
+
+.taskCardDeleting {
+  opacity: 0;
+  transition: opacity 0.18s ease-in-out;
+}
+
 /* Mostly used for input feedback*/ 
 .popupMessage {
   position: absolute;
