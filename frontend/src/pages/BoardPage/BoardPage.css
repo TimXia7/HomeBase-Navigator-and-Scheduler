@@ -157,6 +157,8 @@ e.g. the input for new task and new task button are in their seperate inputGroup
   gap: 6px;
 }
 
+/* the button on the top left of a column that is used to drag and drop the column to reorder it;
+it is also used to drag the column to the collapsed col area on the left to collapse it, */
 .columnDragHandle {
   width: 28px;
   height: 28px;
@@ -185,6 +187,8 @@ e.g. the input for new task and new task button are in their seperate inputGroup
   color: #1f2937;
 }
 
+/* the button on the top right of a column that collapses the column into the collapsed col area on the left, 
+and also expands it back to its original position when the column is already collapsed */
 .collapseButton {
   width: 28px;
   height: 28px;
@@ -255,6 +259,7 @@ e.g. the input for new task and new task button are in their seperate inputGroup
   pointer-events: none;
 }
 
+/* delete button on the top right of a column when the column is not collapsed */
 .deleteColumnButton {
   width: 28px;
   height: 28px;
@@ -344,6 +349,8 @@ e.g. the input for new task and new task button are in their seperate inputGroup
   font-weight: 600;
 }
 
+
+/* delete button for tasks, the one on the top right of the task card */
 .deleteTaskButton {
   border: none;
   background: transparent;
@@ -361,6 +368,8 @@ e.g. the input for new task and new task button are in their seperate inputGroup
   background: #fee2e2;
 }
 
+/* used for the fade out effect when deleting a task, the task is removed from the DOM after the animation ends, 
+this just controls the css for the animation */
 .taskCardDeleting {
   opacity: 0;
   transition: opacity 0.18s ease-in-out;
@@ -392,6 +401,7 @@ e.g. the input for new task and new task button are in their seperate inputGroup
   animation: popupFade 2.5s ease-in-out forwards;
 }
 
+/* Controls popup fade for popupMessage */
 @keyframes popupFade {
   0% {
     opacity: 0;
