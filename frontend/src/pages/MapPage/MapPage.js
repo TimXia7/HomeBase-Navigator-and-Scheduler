@@ -30,9 +30,11 @@ import ClickLocationMarker from "../../components/ClickLocationMarker/ClickLocat
 
 import SelectedLocationBox from "../../components/SelectedLocationBox/SelectedLocationBox.js";
 
+import MapTaskPanel from "../../components/MapTaskPanel/MapTaskPanel.js";
+
 
 // MapPage definition 
-function MapPage() {
+function MapPage({ columns, columnTitles }) {
   const navigate = useNavigate();
 
   // Store user's current selected location on interactive map
@@ -83,6 +85,10 @@ function MapPage() {
             )}
           </div>
         </div>
+        <MapTaskPanel
+          columns={columns}
+          columnTitles={columnTitles}
+        />
       </div>
     </motion.div>
   );

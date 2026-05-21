@@ -70,6 +70,9 @@ function BoardPage({
   // Tracks pop-up messages
   const [popupMessage, setPopupMessage] = useState("");
 
+  // Tracks task cards being deleted, for animation purposes
+  const [deletingTaskIds, setDeletingTaskIds] = useState([]);
+
 
   // Functions for BoardPage:
 
@@ -94,6 +97,32 @@ function BoardPage({
     }));
 
     setNewTaskTitle("");
+  }
+
+  // Function to delete a task from whichever column currently contains it
+  function handleDeleteTask(taskId) {
+    setDeletingTaskIds((prevDeletingTaskIds) => [
+      ...prevDeletingTaskIds,
+      taskId,
+    ]);
+
+    setTimeout(() => {
+      setColumns((prevColumns) => {
+        const updatedColumns = {};
+
+        for (const columnId in prevColumns) {
+          updatedColumns[columnId] = prevColumns[columnId].filter(
+            (task) => task.id !== taskId
+          );
+        }
+
+        return updatedColumns;
+      });
+
+      setDeletingTaskIds((prevDeletingTaskIds) =>
+        prevDeletingTaskIds.filter((id) => id !== taskId)
+      );
+    }, 180);
   }
 
   // Function to delete a column
@@ -387,8 +416,10 @@ function BoardPage({
                         id={column.id}
                         title={column.title}
                         tasks={column.tasks}
+                        deletingTaskIds={deletingTaskIds}
                         onToggleCollapse={toggleColumn}
                         onDeleteColumn={handleDeleteColumn}
+                        onDeleteTask={handleDeleteTask}
                         isColumnDragActive={activeColumnId !== null}
                       />
                     ))}

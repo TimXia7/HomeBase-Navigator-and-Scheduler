@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(origins = "http://localhost:3000")
 public class GeocodingController {
 
+    // Limit calls to 1/1.5s since Nominatim limits free calls
+    // In the future, this should be changed to a different API that enables more calls
     private static final long REQUEST_COOLDOWN_MS = 1500;
 
     private final GeocodingService geocodingService;
@@ -22,6 +24,7 @@ public class GeocodingController {
         this.geocodingService = geocodingService;
     }
 
+    // GET /api/geocode/search - seaches address given the String query, returns data like lat and lng
     @GetMapping("/search")
     public ResponseEntity<?> searchAddress(@RequestParam String query) {
         if (!canMakeRequest()) {
@@ -35,6 +38,7 @@ public class GeocodingController {
         return ResponseEntity.ok(result);
     }
 
+    // GET /api/geocode/search - given lat and lng, reverse geocode to find address
     @GetMapping("/reverse")
     public ResponseEntity<?> reverseGeocode(
             @RequestParam double lat,
@@ -51,6 +55,7 @@ public class GeocodingController {
         return ResponseEntity.ok(result);
     }
 
+    // limit calls in this controller to every 1 ever REQUEST_COOLDOWN_MS ms
     private synchronized boolean canMakeRequest() {
         long currentTime = System.currentTimeMillis();
 
