@@ -137,6 +137,10 @@
   background: white;
 }
 
+.mapMiniTaskCard:hover {
+  background: #f7f5ff;
+}
+
 .addressSearchBox {
   position: absolute;
   top: 16px;
