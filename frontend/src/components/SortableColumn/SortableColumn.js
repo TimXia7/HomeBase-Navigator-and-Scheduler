@@ -1,5 +1,5 @@
 import { forwardRef } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
@@ -9,12 +9,13 @@ import { columnTransition } from "../../constants/boardAnimations";
 
 const SortableColumn = forwardRef(function SortableColumn(
   {
-    // Destructured props
     id,
     title,
     tasks,
+    deletingTaskIds,
     onToggleCollapse,
     onDeleteColumn,
+    onDeleteTask,
     isColumnDragActive,
   },
   forwardedRef
@@ -97,7 +98,12 @@ const SortableColumn = forwardRef(function SortableColumn(
 
         <div className="taskList">
           {tasks.map((task) => (
-            <TaskCard key={task.id} task={task} />
+            <TaskCard
+              key={task.id}
+              task={task}
+              isDeleting={deletingTaskIds.includes(task.id)}
+              onDeleteTask={onDeleteTask}
+            />
           ))}
         </div>
       </div>
