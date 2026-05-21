@@ -30,6 +30,8 @@ import ClickLocationMarker from "../../components/ClickLocationMarker/ClickLocat
 
 import SelectedLocationBox from "../../components/SelectedLocationBox/SelectedLocationBox.js";
 
+import MapTaskPanel from "../../components/MapTaskPanel/MapTaskPanel.js";
+
 
 // MapPage definition 
 function MapPage({ columns, columnTitles }) {
@@ -83,6 +85,10 @@ function MapPage({ columns, columnTitles }) {
             )}
           </div>
         </div>
+        <MapTaskPanel
+          columns={columns}
+          columnTitles={columnTitles}
+        />
       </div>
     </motion.div>
   );
