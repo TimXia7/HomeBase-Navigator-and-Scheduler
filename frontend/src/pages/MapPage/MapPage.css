@@ -1,7 +1,8 @@
 .mapNavBar {
-  grid-template-columns: 180px 1fr;
+  grid-template-columns: 180px 1fr 220px;
+  height: 80vh;
+  min-height: 0;
 }
-
 .mapPanel {
   min-height: 80vh;
   background: white;
@@ -50,6 +51,79 @@
 
 .mapButton:hover {
   background: #374151;
+}
+
+.mapTaskPanel {
+  min-height: 0;
+  max-height: 80vh;
+
+  background: white;
+  border: 1px solid #d8d2ee;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(60, 50, 90, 0.12);
+
+  padding: 12px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  overflow-y: auto;
+}
+
+.mapTaskGroup {
+  border: 1px solid #ddd6f3;
+  border-radius: 12px;
+  background: #f7f5ff;
+  overflow: hidden;
+}
+
+.mapTaskGroup h3 {
+  margin: 0;
+  padding: 10px 12px;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  background: white;
+  border-bottom: 1px solid #ddd6f3;
+}
+
+.mapMiniTaskList {
+  display: flex;
+  flex-direction: column;
+}
+
+.mapMiniTaskCard {
+  padding: 10px 12px;
+  border-bottom: 1px solid #ddd6f3;
+  background: white;
+
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mapMiniTaskCard:last-child {
+  border-bottom: none;
+}
+
+.mapMiniTaskCard strong {
+  font-size: 14px;
+  color: #1f2937;
+}
+
+.mapMiniTaskCard span {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.emptyMapTaskMessage {
+  margin: 0;
+  padding: 10px 12px;
+  font-size: 12px;
+  color: #6b7280;
+  background: white;
 }
 
 .addressSearchBox {
