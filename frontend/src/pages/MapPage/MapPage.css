@@ -240,3 +240,20 @@
 .addTaskFromMapButton:hover {
   background: #374151;
 }
+
+.taskCardCompact {
+  padding: 10px 12px;
+  box-shadow: none;
+}
+
+.taskCardCompact:hover {
+  background: #f7f5ff;
+}
+
+.taskCardCompact p {
+  font-size: 14px;
+}
+
+.taskCardCompact span {
+  font-size: 12px;
+}
