@@ -1,3 +1,4 @@
+import TaskCard from "../TaskCard/TaskCard";
 
 function MapTaskPanel({ columns, columnTitles }) {
   const columnEntries = Object.entries(columns);
@@ -13,10 +14,7 @@ function MapTaskPanel({ columns, columnTitles }) {
               <p className="emptyMapTaskMessage">No tasks</p>
             ) : (
               tasks.map((task) => (
-                <div key={task.id} className="mapMiniTaskCard">
-                  <strong>{task.title}</strong>
-                  <span>{task.location || "No location yet"}</span>
-                </div>
+                <TaskCard key={task.id} task={task} compact />
               ))
             )}
           </div>
