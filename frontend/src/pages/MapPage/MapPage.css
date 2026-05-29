@@ -5,6 +5,7 @@
   align-items: stretch;
 }
 
+/* Left-side map panel with centered button */
 .mapPanel {
   height: 100%;
   min-height: 0;
@@ -19,6 +20,7 @@
   align-items: center;
 }
 
+/* Center map panel */
 .mapContainer {
   height: 100%;
   min-height: 0;
@@ -30,6 +32,7 @@
   overflow: hidden;
 }
 
+/* Map view container to ensure the map fills the area */
 .mapView {
   width: 100%;
   height: 100%;
@@ -41,6 +44,7 @@
   height: 100%;
 }
 
+/* Centered button in the left panel */
 .mapButton {
   width: 110px;
   height: 110px;
@@ -81,6 +85,7 @@
   overflow-x: hidden;
 }
 
+/* To add scrollbar for the task panel */
 .mapTaskGroup {
   border: 1px solid #ddd6f3;
   border-radius: 12px;
@@ -100,11 +105,13 @@
   border-bottom: 1px solid #ddd6f3;
 }
 
+/* List of minimized tasks in the right panel */
 .mapMiniTaskList {
   display: flex;
   flex-direction: column;
 }
 
+/* Individual minimized task card */
 .mapMiniTaskCard {
   padding: 10px 12px;
   border-bottom: 1px solid #ddd6f3;
@@ -129,6 +136,11 @@
   color: #6b7280;
 }
 
+.mapMiniTaskCard:hover {
+  background: #f7f5ff;
+}
+
+/* Message to show when there are no tasks in the right panel */
 .emptyMapTaskMessage {
   margin: 0;
   padding: 10px 12px;
@@ -137,10 +149,7 @@
   background: white;
 }
 
-.mapMiniTaskCard:hover {
-  background: #f7f5ff;
-}
-
+/* Address search box at the top of the map */
 .addressSearchBox {
   position: absolute;
   top: 16px;
@@ -187,6 +196,7 @@
   color: #6b7280;
 }
 
+/* Selected location details box at the top-right of the map */
 .selectedLocationBox {
   position: absolute;
   top: 16px;
@@ -226,6 +236,7 @@
   color: #6b7280;
 }
 
+/* Button to add a new task from the map */
 .addTaskFromMapButton {
   border: none;
   border-radius: 8px;
@@ -241,6 +252,7 @@
   background: #374151;
 }
 
+/* Compact task card style when dragging a task marker on the map */
 .taskCardCompact {
   padding: 10px 12px;
   box-shadow: none;
@@ -258,11 +270,14 @@
   font-size: 12px;
 }
 
+/* Style for the map container when a task marker is being dragged over it */
+/* This adds a subtle outline to indicate that the user can drop the task here */
 .mapContainerDropActive {
   outline: 3px solid rgba(31, 41, 55, 0.25);
   outline-offset: -3px;
 }
 
+/* Custom marker overlay to show the task being dragged on the map */
 .taskMarkerOverlay {
   width: 42px;
   height: 42px;
