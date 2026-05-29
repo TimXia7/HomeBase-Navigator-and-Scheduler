@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import {
@@ -41,6 +41,7 @@ function MapPageContent({
   columns,
   columnTitles,
   activeTask,
+  pointerPosition,
 }) {
   // Makes the map area detectable by dnd-kit as a drop zone for dragged tasks
   const {
@@ -100,19 +101,25 @@ function MapPageContent({
       </div>
 
       <DragOverlay>
-        {activeTask ? (
-          isOverMap ? (
-            <div className="taskMarkerOverlay">
-              📍
-            </div>
-          ) : (
-            <div className="taskCard taskCardOverlay">
-              <p>{activeTask.title}</p>
-              <span>{activeTask.location || "No location yet"}</span>
-            </div>
-          )
+        {activeTask && !isOverMap ? (
+          <div className="taskCard taskCardOverlay">
+            <p>{activeTask.title}</p>
+            <span>{activeTask.location || "No location yet"}</span>
+          </div>
         ) : null}
       </DragOverlay>
+
+      {activeTask && isOverMap && pointerPosition ? (
+        <div
+          className="taskMarkerCursorOverlay"
+          style={{
+            left: pointerPosition.x,
+            top: pointerPosition.y,
+          }}
+        >
+          📍
+        </div>
+      ) : null}
     </>
   );
 }
@@ -127,6 +134,31 @@ function MapPage({ columns, columnTitles }) {
 
   // Store currently active task being dragged
   const [activeTask, setActiveTask] = useState(null);
+
+  // Store current cursor position while dragging
+  const [pointerPosition, setPointerPosition] = useState(null);
+
+
+  // Track cursor position while a task is being dragged
+  useEffect(() => {
+    if (!activeTask) {
+      setPointerPosition(null);
+      return;
+    }
+
+    function handlePointerMove(event) {
+      setPointerPosition({
+        x: event.clientX,
+        y: event.clientY,
+      });
+    }
+
+    window.addEventListener("pointermove", handlePointerMove);
+
+    return () => {
+      window.removeEventListener("pointermove", handlePointerMove);
+    };
+  }, [activeTask]);
 
 
   // Helper functions for MapPage:
@@ -146,7 +178,16 @@ function MapPage({ columns, columnTitles }) {
   function handleDragStart(event) {
     const task = findTaskById(String(event.active.id));
 
-    if (task) setActiveTask(task);
+    if (task) {
+      setActiveTask(task);
+    }
+
+    if (event.activatorEvent) {
+      setPointerPosition({
+        x: event.activatorEvent.clientX,
+        y: event.activatorEvent.clientY,
+      });
+    }
   }
 
   // Runs when the user drops a task
@@ -154,6 +195,7 @@ function MapPage({ columns, columnTitles }) {
     const { active, over } = event;
 
     setActiveTask(null);
+    setPointerPosition(null);
 
     if (!over) {
       return;
@@ -173,6 +215,7 @@ function MapPage({ columns, columnTitles }) {
   // Runs if the drag is cancelled
   function handleDragCancel() {
     setActiveTask(null);
+    setPointerPosition(null);
   }
 
 
@@ -197,6 +240,7 @@ function MapPage({ columns, columnTitles }) {
           columns={columns}
           columnTitles={columnTitles}
           activeTask={activeTask}
+          pointerPosition={pointerPosition}
         />
       </DndContext>
     </motion.div>
