@@ -1,7 +1,12 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { DndContext, DragOverlay } from "@dnd-kit/core";
+import {
+  DndContext,
+  DragOverlay,
+  useDroppable,
+  pointerWithin,
+} from "@dnd-kit/core";
 
 import {
   MapContainer,
@@ -26,6 +31,91 @@ import ClickLocationMarker from "../../components/ClickLocationMarker/ClickLocat
 import SelectedLocationBox from "../../components/SelectedLocationBox/SelectedLocationBox.js";
 
 import MapTaskPanel from "../../components/MapTaskPanel/MapTaskPanel.js";
+
+
+// Component inside DndContext, so useDroppable works properly
+function MapPageContent({
+  navigate,
+  selectedLocation,
+  setSelectedLocation,
+  columns,
+  columnTitles,
+  activeTask,
+}) {
+  // Makes the map area detectable by dnd-kit as a drop zone for dragged tasks
+  const {
+    setNodeRef: setMapDropRef,
+    isOver: isOverMap,
+  } = useDroppable({
+    id: "map-drop-zone",
+  });
+
+  return (
+    <>
+      {/* Navigate to BoardPage */} 
+      <div className="appShell mapNavBar">
+        <aside className="mapPanel">
+          <button className="mapButton" onClick={() => navigate("/board")}>
+            To Task Board
+          </button>
+        </aside>
+
+        {/* Interactive map */} 
+        <div
+          ref={setMapDropRef}
+          className={`mapContainer ${isOverMap ? "mapContainerDropActive" : ""}`}
+        >
+          <div className="mapView">
+            
+            {/* Default starting location on map */} 
+            <MapContainer
+              center={ottawaPosition}
+              zoom={13}
+              className="leafletMap"
+            >
+              {/* Map tiles generated using OSM info, with help from Leaflet */} 
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
+
+              <AddressSearch onSelectLocation={setSelectedLocation} />
+
+              <ClickLocationMarker
+                selectedLocation={selectedLocation}
+                onSelectLocation={setSelectedLocation}
+              />
+            </MapContainer>
+
+            {selectedLocation && (
+              <SelectedLocationBox selectedLocation={selectedLocation} />
+            )}
+          </div>
+        </div>
+
+        <MapTaskPanel
+          columns={columns}
+          columnTitles={columnTitles}
+        />
+      </div>
+
+      <DragOverlay>
+        {activeTask ? (
+          isOverMap ? (
+            <div className="taskMarkerOverlay">
+              📍
+            </div>
+          ) : (
+            <div className="taskCard taskCardOverlay">
+              <p>{activeTask.title}</p>
+              <span>{activeTask.location || "No location yet"}</span>
+            </div>
+          )
+        ) : null}
+      </DragOverlay>
+    </>
+  );
+}
 
 
 // MapPage definition 
@@ -61,15 +151,29 @@ function MapPage({ columns, columnTitles }) {
 
   // Runs when the user drops a task
   function handleDragEnd(event) {
+    const { active, over } = event;
+
     setActiveTask(null);
 
-    // For now, just confirms the map page can detect dropped tasks.
-    // Later, this is where the task location update logic will go.
-    console.log("Dropped task:", event.active.id);
+    if (!over) {
+      return;
+    }
+
+    if (over.id === "map-drop-zone") {
+      console.log("Dropped task on map:", active.id);
+
+      // Later:
+      // update this task's location using map coordinates
+      return;
+    }
+
+    console.log("Dropped task:", active.id);
   }
 
   // Runs if the drag is cancelled
-  function handleDragCancel() { setActiveTask(null); }
+  function handleDragCancel() {
+    setActiveTask(null);
+  }
 
 
   return (
@@ -81,62 +185,19 @@ function MapPage({ columns, columnTitles }) {
       transition={{ duration: 0.45, ease: "easeInOut" }}
     >
       <DndContext
+        collisionDetection={pointerWithin}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
         onDragCancel={handleDragCancel}
       >
-        {/* Navigate to BoardPage */} 
-        <div className="appShell mapNavBar">
-          <aside className="mapPanel">
-            <button className="mapButton" onClick={() => navigate("/board")}>
-              To Task Board
-            </button>
-          </aside>
-
-          {/* Interactive map */} 
-          <div className="mapContainer">
-            <div className="mapView">
-              
-              {/* Default starting location on map */} 
-              <MapContainer
-                center={ottawaPosition}
-                zoom={13}
-                className="leafletMap"
-              >
-                {/* Map tiles generated using OSM info, with help from Leaflet */} 
-                <TileLayer
-                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-
-                <AddressSearch onSelectLocation={setSelectedLocation} />
-
-                <ClickLocationMarker
-                  selectedLocation={selectedLocation}
-                  onSelectLocation={setSelectedLocation}
-                />
-              </MapContainer>
-
-              {selectedLocation && (
-                <SelectedLocationBox selectedLocation={selectedLocation} />
-              )}
-            </div>
-          </div>
-
-          <MapTaskPanel
-            columns={columns}
-            columnTitles={columnTitles}
-          />
-        </div>
-
-        <DragOverlay>
-          {activeTask ? (
-            <div className="taskCard taskCardOverlay">
-              <p>{activeTask.title}</p>
-              <span>{activeTask.location || "No location yet"}</span>
-            </div>
-          ) : null}
-        </DragOverlay>
+        <MapPageContent
+          navigate={navigate}
+          selectedLocation={selectedLocation}
+          setSelectedLocation={setSelectedLocation}
+          columns={columns}
+          columnTitles={columnTitles}
+          activeTask={activeTask}
+        />
       </DndContext>
     </motion.div>
   );
