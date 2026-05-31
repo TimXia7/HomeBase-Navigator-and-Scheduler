@@ -98,6 +98,7 @@ function App() {
             element={
               <MapPage
                 columns={columns}
+                setColumns={setColumns}
                 columnTitles={columnTitles}
               />
             }
