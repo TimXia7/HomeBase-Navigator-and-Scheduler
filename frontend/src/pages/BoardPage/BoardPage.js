@@ -6,10 +6,10 @@ import { useNavigate } from "react-router-dom";
 // For dragging and dropping components
 import {
   DndContext,
-  useDraggable,
-  closestCenter,
+  closestCorners,
   DragOverlay,
 } from "@dnd-kit/core";
+
 import {
   SortableContext,
   horizontalListSortingStrategy,
@@ -453,7 +453,7 @@ function BoardPage({
           </header>
 
           <DndContext
-            collisionDetection={closestCenter}
+            collisionDetection={closestCorners}
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
             onDragCancel={handleDragCancel}
