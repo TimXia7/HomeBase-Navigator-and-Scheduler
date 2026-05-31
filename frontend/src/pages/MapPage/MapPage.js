@@ -11,6 +11,7 @@ import {
 import {
   MapContainer,
   TileLayer,
+  useMap,
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -33,6 +34,18 @@ import SelectedLocationBox from "../../components/SelectedLocationBox/SelectedLo
 import MapTaskPanel from "../../components/MapTaskPanel/MapTaskPanel.js";
 
 
+// Gives MapPage access to the Leaflet map object
+function MapInstanceTracker({ onMapReady }) {
+  const map = useMap();
+
+  useEffect(() => {
+    onMapReady(map);
+  }, [map, onMapReady]);
+
+  return null;
+}
+
+
 // Component inside DndContext, so useDroppable works properly
 function MapPageContent({
   navigate,
@@ -42,6 +55,7 @@ function MapPageContent({
   columnTitles,
   activeTask,
   pointerPosition,
+  setLeafletMap,
 }) {
   // Makes the map area detectable by dnd-kit as a drop zone for dragged tasks
   const {
@@ -74,6 +88,8 @@ function MapPageContent({
               zoom={13}
               className="leafletMap"
             >
+              <MapInstanceTracker onMapReady={setLeafletMap} />
+
               {/* Map tiles generated using OSM info, with help from Leaflet */} 
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -126,7 +142,7 @@ function MapPageContent({
 
 
 // MapPage definition 
-function MapPage({ columns, columnTitles }) {
+function MapPage({ columns, setColumns, columnTitles }) {
   const navigate = useNavigate();
 
   // Store user's current selected location on interactive map
@@ -137,6 +153,9 @@ function MapPage({ columns, columnTitles }) {
 
   // Store current cursor position while dragging
   const [pointerPosition, setPointerPosition] = useState(null);
+
+  // Store Leaflet map instance so drop position can be converted to lat/lng
+  const [leafletMap, setLeafletMap] = useState(null);
 
 
   // Track cursor position while a task is being dragged
@@ -174,6 +193,66 @@ function MapPage({ columns, columnTitles }) {
     return null;
   }
 
+  // Updates one task's location/address
+  function updateTaskLocation(taskId, newLocation) {
+    setColumns((prevColumns) => {
+      const updatedColumns = {};
+
+      for (const columnId in prevColumns) {
+        updatedColumns[columnId] = prevColumns[columnId].map((task) => {
+          if (task.id !== taskId) {
+            return task;
+          }
+
+          return {
+            ...task,
+            location: newLocation.address,
+            position: newLocation.position,
+          };
+        });
+      }
+
+      return updatedColumns;
+    });
+  }
+
+  // Converts the current cursor position to Leaflet lat/lng
+  function getDropLatLng() {
+    if (!leafletMap || !pointerPosition) {
+      return null;
+    }
+
+    const mapContainer = leafletMap.getContainer();
+    const mapRect = mapContainer.getBoundingClientRect();
+
+    const containerPoint = [
+      pointerPosition.x - mapRect.left,
+      pointerPosition.y - mapRect.top,
+    ];
+
+    return leafletMap.containerPointToLatLng(containerPoint);
+  }
+
+  // Uses backend reverse geocoding to get a readable address
+  async function getAddressFromLatLng(lat, lng) {
+    try {
+      const response = await fetch(
+        `http://localhost:8081/api/geocode/reverse?lat=${lat}&lng=${lng}`
+      );
+
+      if (!response.ok) {
+        return "Address not found";
+      }
+
+      const data = await response.json();
+
+      return data.address || "Address not found";
+    } catch (error) {
+      console.error("Reverse geocoding failed after task drop:", error);
+      return "Could not load address";
+    }
+  }
+
   // Runs when the user starts dragging a task
   function handleDragStart(event) {
     const task = findTaskById(String(event.active.id));
@@ -191,25 +270,46 @@ function MapPage({ columns, columnTitles }) {
   }
 
   // Runs when the user drops a task
-  function handleDragEnd(event) {
+  async function handleDragEnd(event) {
     const { active, over } = event;
+
+    const taskId = String(active.id);
+    const droppedOnMap = over?.id === "map-drop-zone";
+
+    if (droppedOnMap) {
+      const dropLatLng = getDropLatLng();
+
+      if (dropLatLng) {
+        const lat = dropLatLng.lat;
+        const lng = dropLatLng.lng;
+
+        // Show immediate feedback while reverse geocoding finishes
+        updateTaskLocation(taskId, {
+          address: "Loading address...",
+          position: [lat, lng],
+        });
+
+        setSelectedLocation({
+          position: [lat, lng],
+          address: "Loading address...",
+        });
+
+        const address = await getAddressFromLatLng(lat, lng);
+
+        updateTaskLocation(taskId, {
+          address,
+          position: [lat, lng],
+        });
+
+        setSelectedLocation({
+          position: [lat, lng],
+          address,
+        });
+      }
+    }
 
     setActiveTask(null);
     setPointerPosition(null);
-
-    if (!over) {
-      return;
-    }
-
-    if (over.id === "map-drop-zone") {
-      console.log("Dropped task on map:", active.id);
-
-      // Later:
-      // update this task's location using map coordinates
-      return;
-    }
-
-    console.log("Dropped task:", active.id);
   }
 
   // Runs if the drag is cancelled
@@ -241,6 +341,7 @@ function MapPage({ columns, columnTitles }) {
           columnTitles={columnTitles}
           activeTask={activeTask}
           pointerPosition={pointerPosition}
+          setLeafletMap={setLeafletMap}
         />
       </DndContext>
     </motion.div>
