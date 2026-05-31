@@ -257,36 +257,91 @@ function BoardPage({
 
     // Was the draggable a task?
     const taskId = activeId;
-    const destinationColumn = overId;
 
-    // Checks for valid col to drop a task on
-    if (!columns[destinationColumn]) return;
+    setColumns((prevColumns) => {
+      let sourceColumn = null;
+      let destinationColumn = null;
+      let movedTask = null;
 
-    // Find the task id (where the task was from)
-    let sourceColumn = null;
-    let movedTask = null;
+      // Find the source column and moved task
+      for (const columnId in prevColumns) {
+        const foundTask = prevColumns[columnId].find(
+          (task) => task.id === taskId
+        );
 
-    for (const columnId in columns) {
-      const foundTask = columns[columnId].find((task) => task.id === taskId);
-
-      if (foundTask) {
-        sourceColumn = columnId;
-        movedTask = foundTask;
-        break;
+        if (foundTask) {
+          sourceColumn = columnId;
+          movedTask = foundTask;
+          break;
+        }
       }
-    }
 
-    if (!sourceColumn || !movedTask) return;
-    if (sourceColumn === destinationColumn) return;
+      if (!sourceColumn || !movedTask) {
+        return prevColumns;
+      }
 
-    // Update the tasks based on the result
-    setColumns((prevColumns) => ({
-      ...prevColumns,
-      [sourceColumn]: prevColumns[sourceColumn].filter(
+      // Case 1: dropped over a column
+      if (prevColumns[overId]) {
+        destinationColumn = overId;
+      } else {
+        // Case 2: dropped over another task
+        for (const columnId in prevColumns) {
+          const foundTask = prevColumns[columnId].find(
+            (task) => task.id === overId
+          );
+
+          if (foundTask) {
+            destinationColumn = columnId;
+            break;
+          }
+        }
+      }
+
+      if (!destinationColumn) {
+        return prevColumns;
+      }
+
+      const sourceTasks = prevColumns[sourceColumn];
+      const destinationTasks = prevColumns[destinationColumn];
+
+      const oldIndex = sourceTasks.findIndex((task) => task.id === taskId);
+
+      // Reorder within the same column
+      if (sourceColumn === destinationColumn) {
+        const newIndex = sourceTasks.findIndex((task) => task.id === overId);
+
+        if (newIndex === -1 || oldIndex === newIndex) {
+          return prevColumns;
+        }
+
+        return {
+          ...prevColumns,
+          [sourceColumn]: arrayMove(sourceTasks, oldIndex, newIndex),
+        };
+      }
+
+      // Move between different columns
+      const updatedSourceTasks = sourceTasks.filter(
         (task) => task.id !== taskId
-      ),
-      [destinationColumn]: [...prevColumns[destinationColumn], movedTask],
-    }));
+      );
+
+      const destinationIndex = destinationTasks.findIndex(
+        (task) => task.id === overId
+      );
+
+      const insertIndex =
+        destinationIndex === -1 ? destinationTasks.length : destinationIndex;
+
+      const updatedDestinationTasks = [...destinationTasks];
+
+      updatedDestinationTasks.splice(insertIndex, 0, movedTask);
+
+      return {
+        ...prevColumns,
+        [sourceColumn]: updatedSourceTasks,
+        [destinationColumn]: updatedDestinationTasks,
+      };
+    });
   }
 
   // Packaging col data for the render

@@ -1,14 +1,28 @@
-import { useDraggable } from "@dnd-kit/core";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 function TaskCard({ task, isDeleting = false, onDeleteTask, compact = false }) {
-  // Make this task card draggable using its unique task id
-  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
     id: task.id,
   });
+
+  const style = {
+    transform: transform ? CSS.Transform.toString(transform) : undefined,
+    transition,
+    zIndex: isDragging ? 20 : undefined,
+  };
 
   return (
     <div
       ref={setNodeRef}
+      style={style}
       className={`taskCard ${compact ? "taskCardCompact" : ""} ${
         isDragging ? "taskCardDragging" : ""
       } ${isDeleting ? "taskCardDeleting" : ""}`}
