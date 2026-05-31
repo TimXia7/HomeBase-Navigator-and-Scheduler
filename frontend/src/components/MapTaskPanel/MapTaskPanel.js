@@ -1,3 +1,8 @@
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+
 import TaskCard from "../TaskCard/TaskCard";
 
 function MapTaskPanel({ columns, columnTitles }) {
@@ -13,9 +18,14 @@ function MapTaskPanel({ columns, columnTitles }) {
             {tasks.length === 0 ? (
               <p className="emptyMapTaskMessage">No tasks</p>
             ) : (
-              tasks.map((task) => (
-                <TaskCard key={task.id} task={task} compact />
-              ))
+              <SortableContext
+                items={tasks.map((task) => task.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                {tasks.map((task) => (
+                  <TaskCard key={task.id} task={task} compact />
+                ))}
+              </SortableContext>
             )}
           </div>
         </section>

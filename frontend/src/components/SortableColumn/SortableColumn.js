@@ -7,6 +7,11 @@ import { CSS } from "@dnd-kit/utilities";
 import TaskCard from "../TaskCard/TaskCard";
 import { columnTransition } from "../../constants/boardAnimations";
 
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+
 const SortableColumn = forwardRef(function SortableColumn(
   {
     id,
@@ -97,14 +102,19 @@ const SortableColumn = forwardRef(function SortableColumn(
         </div>
 
         <div className="taskList">
-          {tasks.map((task) => (
-            <TaskCard
-              key={task.id}
-              task={task}
-              isDeleting={deletingTaskIds.includes(task.id)}
-              onDeleteTask={onDeleteTask}
-            />
-          ))}
+          <SortableContext
+            items={tasks.map((task) => task.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            {tasks.map((task) => (
+              <TaskCard
+                key={task.id}
+                task={task}
+                isDeleting={deletingTaskIds.includes(task.id)}
+                onDeleteTask={onDeleteTask}
+              />
+            ))}
+          </SortableContext>
         </div>
       </div>
     </motion.section>
