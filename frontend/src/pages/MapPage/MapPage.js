@@ -8,6 +8,8 @@ import {
   pointerWithin,
 } from "@dnd-kit/core";
 
+import { arrayMove } from "@dnd-kit/sortable";
+
 import {
   MapContainer,
   TileLayer,
@@ -274,8 +276,17 @@ function MapPage({ columns, setColumns, columnTitles }) {
     const { active, over } = event;
 
     const taskId = String(active.id);
-    const droppedOnMap = over?.id === "map-drop-zone";
+    const overId = over ? String(over.id) : null;
 
+    if (!overId) {
+      setActiveTask(null);
+      setPointerPosition(null);
+      return;
+    }
+
+    const droppedOnMap = overId === "map-drop-zone";
+
+    // Case 1: dropped on the map, so update the task's location
     if (droppedOnMap) {
       const dropLatLng = getDropLatLng();
 
@@ -306,7 +317,14 @@ function MapPage({ columns, setColumns, columnTitles }) {
           address,
         });
       }
+
+      setActiveTask(null);
+      setPointerPosition(null);
+      return;
     }
+
+    // Case 2: dropped over another task in the map task panel, so reorder tasks
+    reorderTask(taskId, overId);
 
     setActiveTask(null);
     setPointerPosition(null);
@@ -316,6 +334,87 @@ function MapPage({ columns, setColumns, columnTitles }) {
   function handleDragCancel() {
     setActiveTask(null);
     setPointerPosition(null);
+  }
+
+  function reorderTask(taskId, overId) {
+    setColumns((prevColumns) => {
+      let sourceColumn = null;
+      let destinationColumn = null;
+      let movedTask = null;
+
+      // Find the task being dragged
+      for (const columnId in prevColumns) {
+        const foundTask = prevColumns[columnId].find(
+          (task) => task.id === taskId
+        );
+
+        if (foundTask) {
+          sourceColumn = columnId;
+          movedTask = foundTask;
+          break;
+        }
+      }
+
+      if (!sourceColumn || !movedTask) {
+        return prevColumns;
+      }
+
+      // Find the column containing the task being hovered over
+      for (const columnId in prevColumns) {
+        const foundTask = prevColumns[columnId].find(
+          (task) => task.id === overId
+        );
+
+        if (foundTask) {
+          destinationColumn = columnId;
+          break;
+        }
+      }
+
+      if (!destinationColumn) {
+        return prevColumns;
+      }
+
+      const sourceTasks = prevColumns[sourceColumn];
+      const destinationTasks = prevColumns[destinationColumn];
+
+      const oldIndex = sourceTasks.findIndex((task) => task.id === taskId);
+
+      // Reorder inside the same column
+      if (sourceColumn === destinationColumn) {
+        const newIndex = sourceTasks.findIndex((task) => task.id === overId);
+
+        if (newIndex === -1 || oldIndex === newIndex) {
+          return prevColumns;
+        }
+
+        return {
+          ...prevColumns,
+          [sourceColumn]: arrayMove(sourceTasks, oldIndex, newIndex),
+        };
+      }
+
+      // Move task between different columns
+      const updatedSourceTasks = sourceTasks.filter(
+        (task) => task.id !== taskId
+      );
+
+      const destinationIndex = destinationTasks.findIndex(
+        (task) => task.id === overId
+      );
+
+      const insertIndex =
+        destinationIndex === -1 ? destinationTasks.length : destinationIndex;
+
+      const updatedDestinationTasks = [...destinationTasks];
+      updatedDestinationTasks.splice(insertIndex, 0, movedTask);
+
+      return {
+        ...prevColumns,
+        [sourceColumn]: updatedSourceTasks,
+        [destinationColumn]: updatedDestinationTasks,
+      };
+    });
   }
 
 
