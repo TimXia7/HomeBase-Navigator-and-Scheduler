@@ -344,6 +344,11 @@ function BoardPage({
     });
   }
 
+  // Handles the event of dragging a task over a potential drop target.
+  // This is where the logic for showing the potential new position of the dragged task happens, by reordering the columns in real time as the 
+  // user drags a task around. Note, this is different from handleDragEnd, which only changes the order of tasks once the user drops the task.
+
+  // This is primarily useful for handling highlights when dragging tasks between col 
   function handleDragOver(event) {
     const { active, over } = event;
 
