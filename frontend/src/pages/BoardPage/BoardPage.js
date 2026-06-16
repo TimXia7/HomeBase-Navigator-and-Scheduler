@@ -344,6 +344,101 @@ function BoardPage({
     });
   }
 
+  // Handles the event of dragging a task over a potential drop target.
+  // This is where the logic for showing the potential new position of the dragged task happens, by reordering the columns in real time as the 
+  // user drags a task around. Note, this is different from handleDragEnd, which only changes the order of tasks once the user drops the task.
+
+  // This is primarily useful for handling highlights when dragging tasks between col 
+  function handleDragOver(event) {
+    const { active, over } = event;
+
+    if (!over) return;
+
+    const activeId = String(active.id);
+    const overId = String(over.id);
+
+    const expandedColumnIds = columnOrder.filter(
+      (columnId) => !collapsedColumns[columnId]
+    );
+
+    // Do not run this logic for column dragging
+    if (expandedColumnIds.includes(activeId)) {
+      return;
+    }
+
+    setColumns((prevColumns) => {
+      let sourceColumn = null;
+      let destinationColumn = null;
+      let movedTask = null;
+
+      // Find the column that currently contains the dragged task
+      for (const columnId in prevColumns) {
+        const foundTask = prevColumns[columnId].find(
+          (task) => task.id === activeId
+        );
+
+        if (foundTask) {
+          sourceColumn = columnId;
+          movedTask = foundTask;
+          break;
+        }
+      }
+
+      if (!sourceColumn || !movedTask) {
+        return prevColumns;
+      }
+
+      // If hovering over a column, that column is the destination
+      if (prevColumns[overId]) {
+        destinationColumn = overId;
+      } else {
+        // Otherwise, find the column containing the hovered task
+        for (const columnId in prevColumns) {
+          const foundTask = prevColumns[columnId].find(
+            (task) => task.id === overId
+          );
+
+          if (foundTask) {
+            destinationColumn = columnId;
+            break;
+          }
+        }
+      }
+
+      if (!destinationColumn) {
+        return prevColumns;
+      }
+
+      // Same-column sorting is already handled visually by SortableContext
+      if (sourceColumn === destinationColumn) {
+        return prevColumns;
+      }
+
+      const sourceTasks = prevColumns[sourceColumn];
+      const destinationTasks = prevColumns[destinationColumn];
+
+      const updatedSourceTasks = sourceTasks.filter(
+        (task) => task.id !== activeId
+      );
+
+      const destinationIndex = destinationTasks.findIndex(
+        (task) => task.id === overId
+      );
+
+      const insertIndex =
+        destinationIndex === -1 ? destinationTasks.length : destinationIndex;
+
+      const updatedDestinationTasks = [...destinationTasks];
+      updatedDestinationTasks.splice(insertIndex, 0, movedTask);
+
+      return {
+        ...prevColumns,
+        [sourceColumn]: updatedSourceTasks,
+        [destinationColumn]: updatedDestinationTasks,
+      };
+    });
+  }
+
   // Packaging col data for the render
   const columnInfo = columnOrder.map((columnId) => ({
     id: columnId,
@@ -455,6 +550,7 @@ function BoardPage({
           <DndContext
             collisionDetection={closestCenter}
             onDragStart={handleDragStart}
+            onDragOver={handleDragOver}
             onDragEnd={handleDragEnd}
             onDragCancel={handleDragCancel}
           >
