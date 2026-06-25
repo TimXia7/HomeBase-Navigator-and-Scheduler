@@ -13,8 +13,12 @@ import { arrayMove } from "@dnd-kit/sortable";
 import {
   MapContainer,
   TileLayer,
+  Marker,
   useMap,
 } from "react-leaflet";
+
+import L from "leaflet";
+
 import "leaflet/dist/leaflet.css";
 
 import {
@@ -47,6 +51,30 @@ function MapInstanceTracker({ onMapReady }) {
   return null;
 }
 
+// Default icon for task location markers on the map
+const taskLocationMarkerIcon = L.divIcon({
+  className: "taskLocationMarkerIcon",
+  iconSize: [28, 28],
+  iconAnchor: [14, 28],
+});
+
+function TaskLocationMarkers({ columns }) {
+  const tasksWithLocations = Object.values(columns)
+    .flat()
+    .filter(
+      (task) =>
+        Array.isArray(task.position) &&
+        task.position.length === 2
+    );
+
+  return tasksWithLocations.map((task) => (
+    <Marker
+      key={task.id}
+      position={task.position}
+      icon={taskLocationMarkerIcon}
+    />
+  ));
+}
 
 // Component inside DndContext, so useDroppable works properly
 function MapPageContent({
@@ -104,6 +132,8 @@ function MapPageContent({
                 selectedLocation={selectedLocation}
                 onSelectLocation={setSelectedLocation}
               />
+
+              <TaskLocationMarkers columns={columns} />
             </MapContainer>
 
             {selectedLocation && (
