@@ -52,10 +52,17 @@ function MapInstanceTracker({ onMapReady }) {
 }
 
 // Default icon for task location markers on the map
-const taskLocationMarkerIcon = L.divIcon({
-  className: "taskLocationMarkerIcon",
-  iconSize: [28, 28],
-  iconAnchor: [14, 28],
+// Red Leaflet-style marker for task locations on the map
+const taskLocationMarkerIcon = new L.Icon({
+  iconUrl:
+    "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png",
+  shadowUrl:
+    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41],
 });
 
 function TaskLocationMarkers({ columns }) {
