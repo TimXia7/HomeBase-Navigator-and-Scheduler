@@ -65,6 +65,9 @@ const taskLocationMarkerIcon = new L.Icon({
   shadowSize: [41, 41],
 });
 
+const taskLocationMarkerImageUrl =
+  "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png";
+
 function TaskLocationMarkers({ columns }) {
   const tasksWithLocations = Object.values(columns)
     .flat()
@@ -165,15 +168,15 @@ function MapPageContent({
       </DragOverlay>
 
       {activeTask && isOverMap && pointerPosition ? (
-        <div
+        <img
           className="taskMarkerCursorOverlay"
+          src={taskLocationMarkerImageUrl}
+          alt=""
           style={{
             left: pointerPosition.x,
             top: pointerPosition.y,
           }}
-        >
-          📍
-        </div>
+        />
       ) : null}
     </>
   );
