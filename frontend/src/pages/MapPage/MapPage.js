@@ -96,6 +96,8 @@ function MapPageContent({
   activeTask,
   pointerPosition,
   setLeafletMap,
+  selectedLocationSource,
+  handleManualSelectedLocation,
 }) {
   // Makes the map area detectable by dnd-kit as a drop zone for dragged tasks
   const {
@@ -136,11 +138,13 @@ function MapPageContent({
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
 
-              <AddressSearch onSelectLocation={setSelectedLocation} />
+              <AddressSearch onSelectLocation={handleManualSelectedLocation} />
 
               <ClickLocationMarker
-                selectedLocation={selectedLocation}
-                onSelectLocation={setSelectedLocation}
+                selectedLocation={
+                  selectedLocationSource === "manual" ? selectedLocation : null
+                }
+                onSelectLocation={handleManualSelectedLocation}
               />
 
               <TaskLocationMarkers columns={columns} />
@@ -189,6 +193,8 @@ function MapPage({ columns, setColumns, columnTitles }) {
 
   // Store user's current selected location on interactive map
   const [selectedLocation, setSelectedLocation] = useState(null);
+
+  const [selectedLocationSource, setSelectedLocationSource] = useState(null);
 
   // Store currently active task being dragged
   const [activeTask, setActiveTask] = useState(null);
@@ -344,6 +350,7 @@ function MapPage({ columns, setColumns, columnTitles }) {
           position: [lat, lng],
           address: "Loading address...",
         });
+        setSelectedLocationSource("taskDrop");
 
         const address = await getAddressFromLatLng(lat, lng);
 
@@ -356,6 +363,7 @@ function MapPage({ columns, setColumns, columnTitles }) {
           position: [lat, lng],
           address,
         });
+        setSelectedLocationSource("taskDrop");
       }
 
       setActiveTask(null);
@@ -457,6 +465,12 @@ function MapPage({ columns, setColumns, columnTitles }) {
     });
   }
 
+  // Updates the selected location when the user manually selects a location on the map (blue leaflet marker)
+  function handleManualSelectedLocation(location) {
+    setSelectedLocation(location);
+    setSelectedLocationSource("manual");
+  }
+
 
   return (
     <motion.div
@@ -476,6 +490,9 @@ function MapPage({ columns, setColumns, columnTitles }) {
           navigate={navigate}
           selectedLocation={selectedLocation}
           setSelectedLocation={setSelectedLocation}
+          selectedLocationSource={selectedLocationSource}
+          setSelectedLocationSource={setSelectedLocationSource}
+          handleManualSelectedLocation={handleManualSelectedLocation}
           columns={columns}
           columnTitles={columnTitles}
           activeTask={activeTask}
